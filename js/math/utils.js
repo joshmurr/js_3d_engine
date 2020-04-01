@@ -45,8 +45,7 @@ var randomRGB = function(){
     return "rgb("+Math.floor(Math.random()*255)+","+Math.floor(Math.random()*255)+","+Math.floor(Math.random()*255)+")";
 }
 var randomVecRGB = function(){
-    return new Vec3(255, 0, 0);
-    // return new Vec3(Math.floor(Math.random()*255),Math.floor(Math.random()*255),Math.floor(Math.random()*255));
+    return new Vec3(Math.floor(Math.random()*255),Math.floor(Math.random()*255),Math.floor(Math.random()*255));
 }
 // ------------------------------------------
 
