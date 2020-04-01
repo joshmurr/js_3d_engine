@@ -230,7 +230,7 @@ export default class Renderer{
         this._MVP.multiplyMat(mesh.getModelMatrix(this.guiValues));
 
         // Background ----------------------------------
-        this.ctx.fillStyle = "rgba(255, 240, 240, 0.8)";
+        this.ctx.fillStyle = this.scene.backgroundColour;
         this.ctx.fillRect(0, 0, this.width, this.height);
         // ---------------------------------------------
 
