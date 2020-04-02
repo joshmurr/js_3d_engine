@@ -14,6 +14,22 @@ canvas{
     left: 0;
 }
 
+.mobile{
+    display: block;
+    position: absolute;
+    bottom: 10px;
+    width: 80%;
+    left: auto;
+    top: auto;
+    transform: translate(10%, -50%);
+    line-height: 1em;
+    background-color: red;
+    z-index: 998;
+}
+.mobile > p{
+    text-align: center;
+}
+
 #menu {
     position: fixed;
     /* display: block; */
@@ -25,11 +41,11 @@ canvas{
 #menu * {
     margin: 0;
     padding: 0;
-    display: block;
+    display: none;
     width: 100%;
-    height: 2em;
+    height: 1.2em;
     border: none;
-    font-size: 1em;
+    font-size: 0.6em;
     text-align: center;
 }
 
@@ -91,4 +107,27 @@ button.selected{
     cursor: pointer;
     border: none;
     border-radius: 3px;
+}
+
+@media screen and (min-width: 400px) {
+    .mobile {
+        display: none;
+    }
+}
+
+/* Laptop */
+@media screen and (min-width: 600px) {
+    #menu * {
+        display: block;
+        height: 1.8em;
+        font-size: 0.8em;
+    }
+}
+
+/* Big Screen */
+@media screen and (min-width: 1280px) {
+    #menu * {
+        height: 2em;
+        font-size: 1em;
+    }
 }

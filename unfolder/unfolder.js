@@ -29,6 +29,9 @@ let meshes = {
 };
 
 let gui = new GUI();
+
+gui.mobile("Sorry, best on desktop.");
+
 gui.menu();
 gui.title("Unfolder");
 gui.title("Drawing Style");

@@ -73,6 +73,15 @@ export default class GUI {
         this.menuContainer.appendChild(dropdown);
     }
 
+    mobile(_message){
+        let mobile = document.createElement("div");
+        mobile.classList.add("mobile");
+        let text = document.createElement("P");
+        text.textContent = String(_message);
+        mobile.appendChild(text);
+        this.body.appendChild(mobile);
+    }
+
     cleanArg(_arg){
         return _arg.toLowerCase().replace(/ /g,'');
     }
