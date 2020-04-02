@@ -47,6 +47,49 @@ var randomRGB = function(){
 var randomVecRGB = function(){
     return new Vec3(Math.floor(Math.random()*255),Math.floor(Math.random()*255),Math.floor(Math.random()*255));
 }
+var areaForSorting = function(_points){
+    // Herons Formula:
+    // https://en.wikipedia.org/wiki/Heron%27s_formula
+    // Although the exact area is not important to we can leave out any square-rooting.
+    let numPoints = _points.length;
+    if(numPoints == 4){
+        let p0 = _points[0];
+        let p1 = _points[1];
+        let p2 = _points[2];
+        let p3 = _points[3];
+
+        let a = p1.getSubtract(p0);
+        let b = p2.getSubtract(p1);
+        let c = p0.getSubtract(p2);
+        a = a.lengthSquared;
+        b = b.lengthSquared;
+        c = c.lengthSquared;
+        // let area1 = 0.25 * Math.sqrt((a + b + c) * (-a + b + c) * (a - b + c) * (a + b - c));
+        let area1 = ((a + b + c) * (-a + b + c) * (a - b + c) * (a + b - c));
+        let d = p3.getSubtract(p2);
+        let e = p0.getSubtract(p3);
+        // let area2 = 0.25 * Math.sqrt((d + e + c) * (-d + e + c) * (d - e + c) * (d + e - c));
+        let area2 = ((d + e + c) * (-d + e + c) * (d - e + c) * (d + e - c));
+        return area1+area2;
+    } else {
+        let p0 = _points[0];
+        let p1 = _points[1];
+        let p2 = _points[2];
+        let a = p1.getSubtract(p0);
+        let b = p2.getSubtract(p1);
+        let c = p0.getSubtract(p2);
+        a = a.lengthSquared;
+        b = b.lengthSquared;
+        c = c.lengthSquared;
+        // return 0.25 * Math.sqrt((a + b + c) * (-a + b + c) * (a - b + c) * (a + b - c));
+        return ((a + b + c) * (-a + b + c) * (a - b + c) * (a + b - c));
+    }
+}
+
+var distance = function(p0, p1){
+    let d = p0.getSubtract(p1);
+    return d.lengthSquared;
+}
 // ------------------------------------------
 
-export { userException, smallNum, isZero, areEqual, checkLength, checkSize, round, randomVecRGB };
+export { userException, smallNum, isZero, areEqual, checkLength, checkSize, round, randomVecRGB, areaForSorting, distance };

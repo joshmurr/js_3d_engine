@@ -310,10 +310,10 @@ export default class Renderer{
             if(this.guiValues["face"]%2!==0){
                 this.ctx.beginPath();
 
-                this.ctx.fillStyle="rgb("+
+                this.ctx.fillStyle="rgba("+
                     this._faceColourArray[sorted_indices[i]*3]+","+    // R
                     this._faceColourArray[1+sorted_indices[i]*3]+","+  // G
-                    this._faceColourArray[2+sorted_indices[i]*3]+")";  // B
+                    this._faceColourArray[2+sorted_indices[i]*3]+",0.6)";  // B
 
                 for(let j=0; j<face.length; j++){
                     this.ctx.lineTo(this._wireframePoints[j+sorted_indices[i]*3][0], this._wireframePoints[j+sorted_indices[i]*3][1]);
@@ -345,8 +345,9 @@ export default class Renderer{
                         this.ctx.stroke();
                     }
                 }
-                // Wireframe --------------------**--
             }
+            // Wireframe --------------------**--
+
 
             // Centroid Numbers -------------**--
             if(this.guiValues["numbers"]%2!==0){
@@ -389,6 +390,54 @@ export default class Renderer{
             }
         }
         // Points -----------------------*---
+
+        // Dual Graph -------------------**--
+        if(this.guiValues["dualgraph"]%2!==0){
+            for(let i=0; i<mesh.dualGraph.length; i++){
+                let A = this._VP.getMultiplyVec(mesh.centroids[mesh.dualGraph[i][0]]);
+                let B = this._VP.getMultiplyVec(mesh.centroids[mesh.dualGraph[i][1]]);
+                A.NDC();
+                B.NDC();
+                xRange = (A.x + 1)*0.5;
+                yRange = 1-(A.y + 1)*0.5;
+                zRange = (A.z + 1)*0.5;
+                xScreen = xRange * this.width;
+                yScreen = yRange * this.height;
+                let bxRange = (B.x + 1)*0.5;
+                let byRange = 1-(B.y + 1)*0.5;
+                let bzRange = (B.z + 1)*0.5;
+                let bxScreen = bxRange * this.width;
+                let byScreen = byRange * this.height;
+                this.ctx.beginPath();
+                this.ctx.strokeStyle="rgb(0,255,0)";
+                this.ctx.moveTo(xScreen, yScreen);
+                this.ctx.lineTo(bxScreen, byScreen);
+                this.ctx.stroke();
+            }
+        }
+        // Dual Graph -------------------**--
+        //
+        // Spanning Tree ----------------**--
+        if(this.guiValues["spanningtree"]%2!==0){
+            for(let i=0; i<mesh.spanningTree.length; i++){
+                let branch = mesh.spanningTree[i];
+                this.ctx.beginPath();
+                this.ctx.strokeStyle="rgb("+Math.floor((i/mesh.spanningTree.length)*255)+",0,"+Math.floor((1-(i/mesh.spanningTree.length))*255)+")";
+                for(let j=0; j<branch.length; j++){
+                    let centroid = this._VP.getMultiplyVec(mesh.centroids[branch[j]]);
+                    centroid.NDC();
+                    xRange = (centroid.x + 1)*0.5;
+                    yRange = 1-(centroid.y + 1)*0.5;
+                    zRange = (centroid.z + 1)*0.5;
+                    xScreen = xRange * this.width;
+                    yScreen = yRange * this.height;
+                    this.ctx.lineWidth = 2;
+                    this.ctx.lineTo(xScreen, yScreen);
+                }
+                this.ctx.stroke();
+            }
+        }
+        // Spanning Tree ----------------**--
 
         // END OF MAIN RENDER LOOP ----------------------------------*****-
         if(this.guiValues["reset"]){
