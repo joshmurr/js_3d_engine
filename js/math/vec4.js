@@ -67,6 +67,10 @@ export class Vec4 extends Vec3{
         this.w *= s;
     }
 
+    getMultiply(s){
+        return new Vec4(this.x*s, this.y*s, this.z*s, this.w*s);
+    }
+
     divide(s){
         super.divide(s);
         this.w /= s;

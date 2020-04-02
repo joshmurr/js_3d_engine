@@ -187,73 +187,34 @@ export default class Mesh{
 
     sortDualGraphByAngleBetweenFaces(){
         let dualGraph_unordered = new Map();
-        let joiningEdges = [];
         for(let i=0; i<this._dualGraph.length; i++){
             // Distance between two centroids in dual graph
             let centroid_A = this._centroids[this._dualGraph[i][0]];
             let centroid_B = this._centroids[this._dualGraph[i][1]];
 
+            // Angle between two faces
+            // https://stackoverflow.com/questions/5355290/find-angle-between-faces-from-face-normals
             let normal_A = this._norms[this._dualGraph[i][0]];
             let normal_B = this._norms[this._dualGraph[i][1]];
             let dp = normal_A.dot(normal_B);
             let angle = Math.acos(dp);
-            console.log(this._dualGraph[i][0], this._dualGraph[i][1], dp, angle);
-
-            /*
-            let joiningEdge = [];
-            for(let j=0; j<this._dualGraph[i].length; j++){
-                let face_A = this._faces[this._dualGraph[i][0]];
-                let face_B = this._faces[this._dualGraph[i][1]];
-
-                for(let k=0; k<face_A.length; k++){
-                    for(let l=0; l<face_A.length; l++){
-                        if(face_A[k] == face_B[l]) {
-                            // console.log(face_A[k], face_B[k]);
-                            joiningEdge.push(face_A[k]);
-                        }
-                    }
-                }
-                let midP = midpoint(this._verts[joiningEdge[0]], this._verts[joiningEdge[1]]);
-                // midP.divide(2);
-                this._midpoints[i] = midP; // Store midpoint with same ID as dual graph pair.
-
-                // Transform verts for more accurate calculations:
-                
-                let tMidP = this.modelMatrix.getMultiplyVec(midP);
-                let tCentroid_A = this.modelMatrix.getMultiplyVec(centroid_A);
-                let tCentroid_B = this.modelMatrix.getMultiplyVec(centroid_B);
-
-                let triangle_side_A = tMidP.getSubtract(tCentroid_A);
-                let triangle_side_B = tMidP.getSubtract(tCentroid_B);
-                let triangle_side_C = tCentroid_A.getSubtract(tCentroid_B);
-                triangle_side_A = triangle_side_A.lengthSquared;
-                triangle_side_B = triangle_side_B.lengthSquared;
-                triangle_side_C = triangle_side_C.lengthSquared;
-
-                console.log(triangle_side_A, triangle_side_B, triangle_side_C);
-                console.log(checkTriangle(triangle_side_A, triangle_side_B, triangle_side_C));
-
-                let triangle_height = heightOfTriangle(triangle_side_A, triangle_side_C, triangle_side_B);
-                console.log(triangle_height);
-
-            } */
-
-            // dualGraph_unordered.set(i, dist);
+            // console.log(this._dualGraph[i][0], this._dualGraph[i][1], dp, angle);
+            
+            dualGraph_unordered.set(i, angle);
         }
-        // ORDER FACES BY CENTROID.Z ------------
-        // Rather than making a new map, the sorted faces are stored in an array
-        // let sorted = [];
-        // let sorted_vals = [];
-        // function sort_faces_into_array(value, key, map){
-            // sorted.push(key);
-            // sorted_vals.push(value);
-        // }
-        // let dualGraph_ordered = new Map([...dualGraph_unordered.entries()].sort((a,b) => a[1] - b[1]));
-        // dualGraph_ordered.forEach(sort_faces_into_array);
-        // this.sorted_dualGraph = sorted;
-        // dualGraph_ordered = null;
-        // dualGraph_unordered = null;
-        // sorted = [];
+        let sorted = [];
+        let sorted_vals = [];
+        function sort_faces_into_array(value, key, map){
+            sorted.push(key);
+            sorted_vals.push(value);
+        }
+        // Swapping a and b gives different results..
+        let dualGraph_ordered = new Map([...dualGraph_unordered.entries()].sort((a,b) => a[1] - b[1]));
+        dualGraph_ordered.forEach(sort_faces_into_array);
+        this.sorted_dualGraph = sorted;
+        dualGraph_ordered = null;
+        dualGraph_unordered = null;
+        sorted = [];
     }
 
 
@@ -264,7 +225,7 @@ export default class Mesh{
             let p1 = this.verts[this.faces[i][1]];
             let p2 = this.verts[this.faces[i][2]];
 
-            let p0subp1 = p0.getSubtract(p1);
+            let p0subp1 = p1.getSubtract(p0);
             let p2subp0 = p2.getSubtract(p0);
 
             let norm = p0subp1.cross(p2subp0);

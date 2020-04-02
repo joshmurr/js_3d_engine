@@ -35,12 +35,12 @@ gui.title("Drawing Style");
 gui.button("colour", "Colour", 0);
 gui.button("normals", "Face Normals", 0);
 gui.button("points", "Points", 0);
-gui.button("midpoints", "Line Midpoints", 1);
-gui.button("wireframe", "Wireframe", 1);
+// gui.button("midpoints", "Line Midpoints", 1);
+gui.button("wireframe", "Wireframe", 0);
 gui.button("face", "Faces", 1);
-gui.button("facenormallines", "Face Normal Lines", 1);
+gui.button("facenormallines", "Face Normal Lines", 0);
 gui.button("numbers", "Face ID", 1);
-gui.button("vertnumbers", "Vert ID", 1);
+gui.button("vertnumbers", "Vert ID", 0);
 gui.button("dualgraph", "Dual Graph", 0);
 gui.button("spanningtree", "Spanning Tree", 1);
 gui.title("Translation");
@@ -55,6 +55,7 @@ gui.title("Scale");
 gui.slider("xScale",0.2, 4, 1.2, 0.2);
 gui.slider("yScale",0.2, 4, 1.2, 0.2);
 gui.slider("zScale",0.2, 4, 1.2, 0.2);
+// gui.button("recalcnorms", "Recalculate Normals", 0);
 gui.button("reset", "Reset", 0);
 gui.dropdown("mesh", Object.keys(meshes));//.map(m => m.charAt(0).toUpperCase()+m.slice(1)));
 gui.button("resetColours", "Reset Colours", 0);
@@ -74,11 +75,11 @@ for(let mesh in meshes){
     meshes[mesh].colour = randomVecRGB();
     meshes[mesh].sortIndicesByCentroid();
     meshes[mesh].createDualGraph();
-    // meshes[mesh].createSpanningTree();
+    meshes[mesh].createSpanningTree();
 }
 
-irregularOctahedron.sortDualGraphByAngleBetweenFaces();
-icosahedron.sortDualGraphByAngleBetweenFaces();
+// irregularOctahedron.sortDualGraphByAngleBetweenFaces();
+// icosahedron.sortDualGraphByAngleBetweenFaces();
 
 // octahedron.createSpanningTree();
 // console.log(icosahedron.dualGraph);

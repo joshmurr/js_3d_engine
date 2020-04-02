@@ -258,9 +258,9 @@ export default class Renderer{
 
             // Update Normals and calculate colours ---------------------------------------
             if(mesh.NORMS_ARE_CALCULATED /*&& (this.guiValues["normals"]%2!==0 || this.guiValues["colour"]%2!==0)*/){
-                let faceButton = document.getElementById("face");
-                faceButton.value = 1;
-                faceButton.classList.toggle("selected", true);
+                // let faceButton = document.getElementById("face");
+                // faceButton.value = 1;
+                // faceButton.classList.toggle("selected", true);
                 let norm = mesh.norms[sorted_indices[i]];
                 let normalTransformMatrix = this._MVP.getAffineInverse();
                 normalTransformMatrix.transpose();
@@ -354,17 +354,17 @@ export default class Renderer{
             // Wireframe --------------------**--
 
 
+            let centroid = this._VP.getMultiplyVec(mesh.centroids[sorted_indices[i]]);
+            centroid.NDC();
+            xRange = (centroid.x + 1)*0.5;
+            yRange = 1-(centroid.y + 1)*0.5;
+            zRange = (centroid.z + 1)*0.5;
+            xScreen = xRange * this.width;
+            yScreen = yRange * this.height;
             // Centroid Numbers -------------**--
             if(this.guiValues["numbers"]%2!==0){
                 // Only multiply by the ViewProjection matrix as the centroid already to the model
                 // matrix manipulation applied.
-                let centroid = this._VP.getMultiplyVec(mesh.centroids[sorted_indices[i]]);
-                centroid.NDC();
-                xRange = (centroid.x + 1)*0.5;
-                yRange = 1-(centroid.y + 1)*0.5;
-                zRange = (centroid.z + 1)*0.5;
-                xScreen = xRange * this.width;
-                yScreen = yRange * this.height;
                 this.ctx.fillStyle="rgb("+Math.floor(xRange*128)+127+","+Math.floor(yRange*128)+127+","+Math.floor(zRange*128)+127+")";
                 this.ctx.font = String(Math.floor(zRange * 5) + "px Roboto Mono");
                 this.ctx.fillText(sorted_indices[i], xScreen, yScreen);
@@ -374,15 +374,8 @@ export default class Renderer{
             if(this.guiValues["facenormallines"]%2!==0){
                 // Only multiply by the ViewProjection matrix as the centroid already to the model
                 // matrix manipulation applied.
-                let centroid = this._VP.getMultiplyVec(mesh.centroids[sorted_indices[i]]);
-                centroid.NDC();
-                xRange = (centroid.x + 1)*0.5;
-                yRange = 1-(centroid.y + 1)*0.5;
-                zRange = (centroid.z + 1)*0.5;
-                xScreen = xRange * this.width;
-                yScreen = yRange * this.height;
-
-                let normCoord = transformedNormal.getMultiply(0.5);//.getMultiply(1);
+                let normCoord = transformedNormal.getMultiply(0.1);
+                normCoord.add(centroid);
                 let normScreenX = this.width * (normCoord.x+1)*0.5;
                 let normScreenY = this.height * (1-(normCoord.y + 1)*0.5);
 
