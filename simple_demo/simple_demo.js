@@ -6,13 +6,59 @@ import GUI from '../js/gui/gui.js';
 import Renderer from '../js/render/renderer.js';
 import Scene from '../js/scene/scene.js';
 
-import { Icosahedron } from '../js/mesh/platonicSolids.js';
+import { Icosahedron, Octahedron, Tetrahedron, Cube } from '../js/mesh/platonicSolids.js';
+import { Torus, KleinBottle, MobiusTube, SineSurface, EightSurface, HyperbolicOctahedron, CrossCap } from '../js/mesh/parametricSolid.js';
+import { Teapot2 } from '../js/mesh/miscSolid.js';
 
 let icosahedron = new Icosahedron();
+let octahedron = new Octahedron();
+let tetrahedron = new Tetrahedron();
+let cube = new Cube();
+let teapot2 = new Teapot2();
+let torus = new Torus(16, 16, 0, Math.PI*2, 0, Math.PI*2, 2, 1);
+let klein = new KleinBottle(16, 32, 0, Math.PI*2, 0, Math.PI*2);
+let mobiusTube = new MobiusTube(16, 16, 0, Math.PI*2, 0, Math.PI*2, 1, 2);
+let sineSurface = new SineSurface(32, 32, 0, Math.PI*2, 0, Math.PI*2, 1);
+let eightSurface = new EightSurface(32, 32, 0, Math.PI*2, -Math.PI/2, Math.PI/2);
+let hyperbolicOctahedron = new HyperbolicOctahedron(32, 32, -Math.PI/2, Math.PI/2, -Math.PI, Math.PI);
+let crossCap = new CrossCap(16, 16, 0, Math.PI*2, 0, Math.PI/2);
+torus.createVerts();
+torus.createFaces();
+
+klein.createVerts();
+klein.createFaces();
+
+mobiusTube.createVerts();
+mobiusTube.createFaces();
+
+sineSurface.createVerts();
+sineSurface.createFaces();
+
+eightSurface.createVerts();
+eightSurface.createFaces();
+
+hyperbolicOctahedron.createVerts();
+hyperbolicOctahedron.createFaces();
+
+crossCap.createVerts();
+crossCap.createFaces();
+
+teapot2.createFaces(); // This is a special case to re-format the indices taken from a .OBJ file
 
 
 let meshes = {
     "Icosahedron": icosahedron,
+    "Octahedron" : octahedron,
+    "Tetrahedron": tetrahedron,
+    "Cube": cube,
+    "Torus": torus,
+    "Sine Surface": sineSurface,
+    "Cross Cap": crossCap,
+    "Mobius Tube": mobiusTube,
+    "Hyperbolic Octahedron": hyperbolicOctahedron,
+    "Eight Surface": eightSurface,
+    "Klein": klein,
+    "Teapot": teapot2,
 };
 
 let gui = new GUI();
@@ -49,8 +95,12 @@ let scene = new Scene(meshes, camera, light, gui.getIdList());
 let renderer = new Renderer(scene);
 renderer.setup();
 
-icosahedron.computeFaceNormals();
-icosahedron.colour = randomVecRGB();
+// Setup meshes
+for(let mesh in meshes){
+    meshes[mesh].computeFaceNormals();
+    meshes[mesh].colour = randomVecRGB();
+    meshes[mesh].sortIndicesByCentroid();
+}
 
 function draw(){
     renderer.render();

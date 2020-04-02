@@ -21,10 +21,10 @@ torus.createFaces();
 
 
 let meshes = {
+    "Icosahedron": icosahedron,
     "Irregular Octahedron": irregularOctahedron,
     "Octahedron": octahedron,
-    "Icosahedron": icosahedron,
-    "Cube": cube,
+    // "Cube": cube,
     "Torus": torus,
 };
 
@@ -35,9 +35,12 @@ gui.title("Drawing Style");
 gui.button("colour", "Colour", 0);
 gui.button("normals", "Face Normals", 0);
 gui.button("points", "Points", 0);
-gui.button("wireframe", "Wireframe", 0);
+gui.button("midpoints", "Line Midpoints", 1);
+gui.button("wireframe", "Wireframe", 1);
 gui.button("face", "Faces", 1);
+gui.button("facenormallines", "Face Normal Lines", 1);
 gui.button("numbers", "Face ID", 1);
+gui.button("vertnumbers", "Vert ID", 1);
 gui.button("dualgraph", "Dual Graph", 0);
 gui.button("spanningtree", "Spanning Tree", 1);
 gui.title("Translation");
@@ -71,8 +74,11 @@ for(let mesh in meshes){
     meshes[mesh].colour = randomVecRGB();
     meshes[mesh].sortIndicesByCentroid();
     meshes[mesh].createDualGraph();
-    meshes[mesh].createSpanningTree();
+    // meshes[mesh].createSpanningTree();
 }
+
+irregularOctahedron.sortDualGraphByAngleBetweenFaces();
+icosahedron.sortDualGraphByAngleBetweenFaces();
 
 // octahedron.createSpanningTree();
 // console.log(icosahedron.dualGraph);

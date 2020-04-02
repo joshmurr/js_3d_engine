@@ -86,10 +86,21 @@ var areaForSorting = function(_points){
     }
 }
 
+var checkTriangle = function(a, b, c){
+    return (a+b>c && a+c>b && b+c>a);
+}
+
+var heightOfTriangle = function(a, b, c){
+    console.log(a, b, c);
+    return /*0.5 * Math.sqrt*/((a + b + c) * (-a + b + c) * (a - b + c) * (a + b - c)) / b;
+}
 var distance = function(p0, p1){
     let d = p0.getSubtract(p1);
     return d.lengthSquared;
 }
+var midpoint = function(p0, p1){
+    return new Vec3((p0.x+p1.x)/2, (p0.y+p1.y)/2, (p0.z+p1.z)/2, (p0.w+p1.w)/2);
+}
 // ------------------------------------------
 
-export { userException, smallNum, isZero, areEqual, checkLength, checkSize, round, randomVecRGB, areaForSorting, distance };
+export { userException, smallNum, isZero, areEqual, checkLength, checkSize, round, randomVecRGB, areaForSorting, distance, midpoint, heightOfTriangle, checkTriangle };

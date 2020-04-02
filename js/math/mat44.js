@@ -378,17 +378,12 @@ export class Mat44 extends Mat33{
     }
 
     getAffineInverse(){
-
         let ret = new Mat44();
 
         let cofactor0 = this.M[5]*this.M[10] - this.M[6]*this.M[9];
         let cofactor4 = this.M[2]*this.M[9] - this.M[1]*this.M[10];
         let cofactor8 = this.M[1]*this.M[6] - this.M[2]*this.M[5];
         let det = this.M[0]*cofactor0 + this.M[4]*cofactor4 + this.M[8]*cofactor8;
-
-        if(Utils.isZero(det)) {
-            throw new Utils.userException("Singular Matrix: Non-Invertible!");
-        }
 
         // create adjunct matrix and multiply by 1/det to get upper 3x3
         let invDet = 1/det;
@@ -410,24 +405,21 @@ export class Mat44 extends Mat33{
         ret.M[14] = -ret.M[2]*this.M[12] - ret.M[6]*this.M[13] - ret.M[10]*this.M[14];
 
         // bottom row [0, 0, 0, 1]
-        ret.M[3] = ret.M[7] = ret.M[11] = 0;
+        ret.M[3] = 0;
+        ret.M[7] = 0;
+        ret.M[11] = 0;
         ret.M[15] = 1;
-
 
         return ret;
     }
 
     affineInverseMat44(_M){
-
         let ret = new Mat44();
 
         let cofactor0 = _M.M[5]*_M.M[10] - _M.M[6]*_M.M[9];
         let cofactor4 = _M.M[2]*_M.M[9] - _M.M[1]*_M.M[10];
         let cofactor8 = _M.M[1]*_M.M[6] - _M.M[2]*_M.M[5];
         let det = _M.M[0]*cofactor0 + _M.M[4]*cofactor4 + _M.M[8]*cofactor8;
-
-        if(Utils.isZero(det)) {
-        }
 
         // create adjunct matrix and multiply by 1/det to get upper 3x3
         let invDet = 1/det;
@@ -453,7 +445,6 @@ export class Mat44 extends Mat33{
         ret.M[7] = 0;
         ret.M[11] = 0;
         ret.M[15] = 1;
-
 
         return ret;
     }

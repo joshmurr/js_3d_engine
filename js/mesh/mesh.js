@@ -1,4 +1,4 @@
-import { areaForSorting, distance } from '../math/utils.js';
+import { areaForSorting, distance, midpoint, checkTriangle, heightOfTriangle } from '../math/utils.js';
 import { Vec3, Vec4, Mat44 } from '../math/math.js';
 // import Vec4 from '../math/vec4.js';
 // import Mat44 from '../math/mat44.js';
@@ -15,6 +15,7 @@ export default class Mesh{
     _dualGraph = [];
     _dualGraph_sorted = [];
     _spanningTree = [];
+    _midpoints = [];
 
     constructor(){
         this.modelMatrix = new Mat44();
@@ -56,6 +57,15 @@ export default class Mesh{
         return this._centroids;
     }
 
+    set midpoints(m){
+        for(let i=0; i<m.length; i++){
+            this._midpoints[i] = m[i];
+        }
+    }
+    get midpoints(){
+        return this._midpoints;
+    }
+
     get meshCentroid(){
         let sum = new Vec4(0,0,0,0);
         for(let i=0; i<this._centroids.length; i++){
@@ -75,7 +85,7 @@ export default class Mesh{
         this.sortIndicesByCentroid();
         return this._indices_sorted;
     }
-    
+
     set sorted_dualGraph(_sorted_array){
         for(let i=0; i<_sorted_array.length; i++){
             this._dualGraph_sorted[i] = _sorted_array[i];
@@ -152,7 +162,6 @@ export default class Mesh{
     }
 
     sortDualGraphByDistanceBetweenCentroids(){
-        // Store the <centroid.z, face> map for later sorting
         let dualGraph_unordered = new Map();
         for(let i=0; i<this._dualGraph.length; i++){
             // Distance between two centroids in dual graph
@@ -168,22 +177,83 @@ export default class Mesh{
             sorted.push(key);
             sorted_vals.push(value);
         }
-        // An arrow function to sort the map by value (centroid.z)
-        // Arrow functions are difficult to read
-        // https://stackoverflow.com/questions/37982476/how-to-sort-a-map-by-value-in-javascript
         let dualGraph_ordered = new Map([...dualGraph_unordered.entries()].sort((a,b) => a[1] - b[1]));
-        // sort_faces_into_array is a callback function which takes (value, key, map).
-        // I presume this is an automatic feature of a Map.
         dualGraph_ordered.forEach(sort_faces_into_array);
-        // Faces are now sorted back to front!
-        // this.sorted_indices = sorted;
-        // Try and free some memory:
-        // console.log(sorted_vals);
         this.sorted_dualGraph = sorted;
-        // console.log(dualGraph_ordered);
         dualGraph_ordered = null;
         dualGraph_unordered = null;
         sorted = [];
+    }
+
+    sortDualGraphByAngleBetweenFaces(){
+        let dualGraph_unordered = new Map();
+        let joiningEdges = [];
+        for(let i=0; i<this._dualGraph.length; i++){
+            // Distance between two centroids in dual graph
+            let centroid_A = this._centroids[this._dualGraph[i][0]];
+            let centroid_B = this._centroids[this._dualGraph[i][1]];
+
+            let normal_A = this._norms[this._dualGraph[i][0]];
+            let normal_B = this._norms[this._dualGraph[i][1]];
+            let dp = normal_A.dot(normal_B);
+            let angle = Math.acos(dp);
+            console.log(this._dualGraph[i][0], this._dualGraph[i][1], dp, angle);
+
+            /*
+            let joiningEdge = [];
+            for(let j=0; j<this._dualGraph[i].length; j++){
+                let face_A = this._faces[this._dualGraph[i][0]];
+                let face_B = this._faces[this._dualGraph[i][1]];
+
+                for(let k=0; k<face_A.length; k++){
+                    for(let l=0; l<face_A.length; l++){
+                        if(face_A[k] == face_B[l]) {
+                            // console.log(face_A[k], face_B[k]);
+                            joiningEdge.push(face_A[k]);
+                        }
+                    }
+                }
+                let midP = midpoint(this._verts[joiningEdge[0]], this._verts[joiningEdge[1]]);
+                // midP.divide(2);
+                this._midpoints[i] = midP; // Store midpoint with same ID as dual graph pair.
+
+                // Transform verts for more accurate calculations:
+                
+                let tMidP = this.modelMatrix.getMultiplyVec(midP);
+                let tCentroid_A = this.modelMatrix.getMultiplyVec(centroid_A);
+                let tCentroid_B = this.modelMatrix.getMultiplyVec(centroid_B);
+
+                let triangle_side_A = tMidP.getSubtract(tCentroid_A);
+                let triangle_side_B = tMidP.getSubtract(tCentroid_B);
+                let triangle_side_C = tCentroid_A.getSubtract(tCentroid_B);
+                triangle_side_A = triangle_side_A.lengthSquared;
+                triangle_side_B = triangle_side_B.lengthSquared;
+                triangle_side_C = triangle_side_C.lengthSquared;
+
+                console.log(triangle_side_A, triangle_side_B, triangle_side_C);
+                console.log(checkTriangle(triangle_side_A, triangle_side_B, triangle_side_C));
+
+                let triangle_height = heightOfTriangle(triangle_side_A, triangle_side_C, triangle_side_B);
+                console.log(triangle_height);
+
+            } */
+
+            // dualGraph_unordered.set(i, dist);
+        }
+        // ORDER FACES BY CENTROID.Z ------------
+        // Rather than making a new map, the sorted faces are stored in an array
+        // let sorted = [];
+        // let sorted_vals = [];
+        // function sort_faces_into_array(value, key, map){
+            // sorted.push(key);
+            // sorted_vals.push(value);
+        // }
+        // let dualGraph_ordered = new Map([...dualGraph_unordered.entries()].sort((a,b) => a[1] - b[1]));
+        // dualGraph_ordered.forEach(sort_faces_into_array);
+        // this.sorted_dualGraph = sorted;
+        // dualGraph_ordered = null;
+        // dualGraph_unordered = null;
+        // sorted = [];
     }
 
 
@@ -265,8 +335,9 @@ export default class Mesh{
 
     createSpanningTree(){
         this._spanningTree = [];
-        
-        this.sortDualGraphByDistanceBetweenCentroids();
+
+        // this.sortDualGraphByDistanceBetweenCentroids();
+        this.sortDualGraphByAngleBetweenFaces();
 
         let face_areas = [];
         // The largest face will be the root of the Spanning Tree.
@@ -317,17 +388,17 @@ export default class Mesh{
         //
 
         // for(let i=0; i<this._dualGraph_sorted.length; i++){
-            // Dual graph pair > dual graph ordered by distance between centroids,
-            // and the area of the respective face.
-            //
-            // 0 > 2: 231 6: 1824
-            // 5 > 2: 787 1: 7956
-            // 8 > 2: ... 3: ..
-            //
+        // Dual graph pair > dual graph ordered by distance between centroids,
+        // and the area of the respective face.
+        //
+        // 0 > 2: 231 6: 1824
+        // 5 > 2: 787 1: 7956
+        // 8 > 2: ... 3: ..
+        //
 
-            // console.log(this._dualGraph_sorted[i]+" > ",
-                        // this._dualGraph[this._dualGraph_sorted[i]][0]+": "+Math.floor(face_areas[this._dualGraph[this._dualGraph_sorted[i]][0]]),
-                        // this._dualGraph[this._dualGraph_sorted[i]][1]+": "+Math.floor(face_areas[this._dualGraph[this._dualGraph_sorted[i]][1]]));
+        // console.log(this._dualGraph_sorted[i]+" > ",
+        // this._dualGraph[this._dualGraph_sorted[i]][0]+": "+Math.floor(face_areas[this._dualGraph[this._dualGraph_sorted[i]][0]]),
+        // this._dualGraph[this._dualGraph_sorted[i]][1]+": "+Math.floor(face_areas[this._dualGraph[this._dualGraph_sorted[i]][1]]));
         // }
 
         // Create Spanning Tree ---------------------------
@@ -335,7 +406,7 @@ export default class Mesh{
         for(let i=0; i<this._dualGraph_sorted.length; i++){
             let currentPair = this._dualGraph[this._dualGraph_sorted[i]].slice();
             // currentPair[0] >= currentPair[1]
-            
+
             // Check if currentPair[0] is already a child of another node
             let isChild = false;
             for(let i=0; i<spanningTree.length; i++){

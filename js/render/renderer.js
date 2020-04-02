@@ -253,16 +253,18 @@ export default class Renderer{
             let face = mesh.faces[sorted_indices[i]];
             let faceSize = face.length;
 
+            let transformedNormal;
+
 
             // Update Normals and calculate colours ---------------------------------------
-            if(mesh.NORMS_ARE_CALCULATED && (this.guiValues["normals"]%2!==0 || this.guiValues["colour"]%2!==0)){
+            if(mesh.NORMS_ARE_CALCULATED /*&& (this.guiValues["normals"]%2!==0 || this.guiValues["colour"]%2!==0)*/){
                 let faceButton = document.getElementById("face");
                 faceButton.value = 1;
                 faceButton.classList.toggle("selected", true);
                 let norm = mesh.norms[sorted_indices[i]];
                 let normalTransformMatrix = this._MVP.getAffineInverse();
                 normalTransformMatrix.transpose();
-                let transformedNormal = normalTransformMatrix.getMultiplyVec(norm);
+                transformedNormal = normalTransformMatrix.getMultiplyVec(norm);
                 dir = transformedNormal.dot(new Vec4(0,0,-1000)); // Dot with vec way behind mesh
                 let diffuse = Math.max(0, Math.abs(transformedNormal.dot(this.scene.light)));
 
@@ -310,10 +312,13 @@ export default class Renderer{
             if(this.guiValues["face"]%2!==0){
                 this.ctx.beginPath();
 
+                let alpha = 0.6;
+                if(this.guiValues["colour"]%2!==0 || this.guiValues["normals"]%2!==0) alpha = 1.0;
                 this.ctx.fillStyle="rgba("+
                     this._faceColourArray[sorted_indices[i]*3]+","+    // R
                     this._faceColourArray[1+sorted_indices[i]*3]+","+  // G
-                    this._faceColourArray[2+sorted_indices[i]*3]+",0.6)";  // B
+                    this._faceColourArray[2+sorted_indices[i]*3]+","+   // B
+                    alpha+")";                                         // A
 
                 for(let j=0; j<face.length; j++){
                     this.ctx.lineTo(this._wireframePoints[j+sorted_indices[i]*3][0], this._wireframePoints[j+sorted_indices[i]*3][1]);
@@ -365,12 +370,36 @@ export default class Renderer{
                 this.ctx.fillText(sorted_indices[i], xScreen, yScreen);
             }
             // Centroid Numbers -------------**--
+            // Face Normal Lines ------------**--
+            if(this.guiValues["facenormallines"]%2!==0){
+                // Only multiply by the ViewProjection matrix as the centroid already to the model
+                // matrix manipulation applied.
+                let centroid = this._VP.getMultiplyVec(mesh.centroids[sorted_indices[i]]);
+                centroid.NDC();
+                xRange = (centroid.x + 1)*0.5;
+                yRange = 1-(centroid.y + 1)*0.5;
+                zRange = (centroid.z + 1)*0.5;
+                xScreen = xRange * this.width;
+                yScreen = yRange * this.height;
+
+                let normCoord = transformedNormal.getMultiply(0.5);//.getMultiply(1);
+                let normScreenX = this.width * (normCoord.x+1)*0.5;
+                let normScreenY = this.height * (1-(normCoord.y + 1)*0.5);
+
+                this.ctx.strokeStyle="pink";
+
+                this.ctx.beginPath();
+                this.ctx.moveTo(xScreen, yScreen);
+                this.ctx.lineTo(normScreenX, normScreenY);
+                this.ctx.stroke();
+            }
+            // Face Normal Lines ------------**--
         }
         // VERT-BY-VERT RENDERING ------------------------------------*---
         // Points -----------------------*---
+        let meshCentroid = this._VP.getMultiplyVec(mesh.meshCentroid);
+        meshCentroid.NDC();
         if(this.guiValues["points"]%2!==0){
-            let meshCentroid = this._VP.getMultiplyVec(mesh.meshCentroid);
-            meshCentroid.NDC();
             for(let i=0; i<this._transformedVerts.length; i++){
                 // Get centroid
                 let p = this._transformedVerts[i];
@@ -390,6 +419,48 @@ export default class Renderer{
             }
         }
         // Points -----------------------*---
+        // Midpoints --------------------*---
+        if(this.guiValues["midpoints"]%2!==0){
+            for(let i=0; i<mesh.midpoints.length; i++){
+                // let v = this._MVP.getMultiplyVec(mesh.verts[i]);
+                // Get centroid
+                let p = this._MVP.getMultiplyVec(mesh.midpoints[i]);
+                // let z = p.w;
+                p.NDC();
+                xRange = (p.x + 1)*0.5;
+                yRange = 1-(p.y + 1)*0.5;
+                zRange  = (p.z + 1)*0.5;
+                xScreen = xRange * this.width;
+                yScreen = yRange * this.height;
+                if(p.z > meshCentroid.z) this.ctx.fillStyle = "rgba(255,0,0,0.4)";
+                else this.ctx.fillStyle = "rgba(255,0,0,1)";
+                this.ctx.beginPath();
+                this.ctx.arc(xScreen, yScreen, zRange, 0, Math.PI*2);
+                this.ctx.closePath();
+                this.ctx.fill();
+            }
+        }
+        // Midpoints --------------------*---
+        // Vert Numbers -----------------*---
+        if(this.guiValues["vertnumbers"]%2!==0){
+            for(let i=0; i<this._transformedVerts.length; i++){
+                // Get centroid
+                let p = this._transformedVerts[i];
+                // let z = p.w;
+                p.NDC();
+                xRange = (p.x + 1)*0.5;
+                yRange = 1-(p.y + 1)*0.5;
+                zRange  = (p.z + 1)*0.5;
+                xScreen = xRange * this.width;
+                yScreen = yRange * this.height;
+                if(p.z > meshCentroid.z) this.ctx.fillStyle = "rgba(255,0,0,0.4)";
+                else this.ctx.fillStyle = "rgba(255,0,0,1)";
+                // this.ctx.fillStyle="rgb("+Math.floor(xRange*128)+127+","+Math.floor(yRange*128)+127+","+Math.floor(zRange*128)+127+")";
+                this.ctx.font = String(Math.floor(zRange * 5) + "px Roboto Mono");
+                this.ctx.fillText(i, xScreen, yScreen);
+            }
+        }
+        // Vert Numbers -----------------*---
 
         // Dual Graph -------------------**--
         if(this.guiValues["dualgraph"]%2!==0){
