@@ -21,11 +21,11 @@ torus.createFaces();
 
 
 let meshes = {
-    "Icosahedron": icosahedron,
     "Irregular Octahedron": irregularOctahedron,
-    "Octahedron": octahedron,
-    // "Cube": cube,
-    "Torus": torus,
+    // "Icosahedron": icosahedron,
+    // "Octahedron": octahedron,
+    "Cube": cube,
+    // "Torus": torus,
 };
 
 let gui = new GUI();
@@ -85,6 +85,8 @@ for(let mesh in meshes){
 // console.log(icosahedron.dualGraph);
 // icosahedron.createSpanningTree();
 // irregularOctahedron.createSpanningTree();
+irregularOctahedron.flatten();
+// cube.flatten();
 
 function draw(){
     renderer.render();

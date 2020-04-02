@@ -15,6 +15,7 @@ export default class Mesh{
     _dualGraph = [];
     _dualGraph_sorted = [];
     _spanningTree = [];
+    _angles_sorted = [];
     _midpoints = [];
 
     constructor(){
@@ -94,6 +95,15 @@ export default class Mesh{
 
     get sorted_dualGraph(){
         return this._dualGraph_sorted;
+    }
+    set sorted_angles(_sorted_array){
+        for(let i=0; i<_sorted_array.length; i++){
+            this._angles_sorted[i] = _sorted_array[i];
+        }
+    }
+
+    get sorted_angles(){
+        return this._angles_sorted;
     }
 
     set spanningTree(_array){
@@ -197,7 +207,7 @@ export default class Mesh{
             let normal_A = this._norms[this._dualGraph[i][0]];
             let normal_B = this._norms[this._dualGraph[i][1]];
             let dp = normal_A.dot(normal_B);
-            let angle = Math.acos(dp);
+            let angle = Math.PI - Math.acos(dp); // Pi minus angle to get interior
             // console.log(this._dualGraph[i][0], this._dualGraph[i][1], dp, angle);
             
             dualGraph_unordered.set(i, angle);
@@ -212,6 +222,7 @@ export default class Mesh{
         let dualGraph_ordered = new Map([...dualGraph_unordered.entries()].sort((a,b) => a[1] - b[1]));
         dualGraph_ordered.forEach(sort_faces_into_array);
         this.sorted_dualGraph = sorted;
+        this.sorted_angles = sorted_vals;
         dualGraph_ordered = null;
         dualGraph_unordered = null;
         sorted = [];
@@ -348,15 +359,6 @@ export default class Mesh{
         // Spanning tree with least weight will be formed, called Minimum Spanning Tree
         //
 
-        // for(let i=0; i<this._dualGraph_sorted.length; i++){
-        // Dual graph pair > dual graph ordered by distance between centroids,
-        // and the area of the respective face.
-        //
-        // 0 > 2: 231 6: 1824
-        // 5 > 2: 787 1: 7956
-        // 8 > 2: ... 3: ..
-        //
-
         // console.log(this._dualGraph_sorted[i]+" > ",
         // this._dualGraph[this._dualGraph_sorted[i]][0]+": "+Math.floor(face_areas[this._dualGraph[this._dualGraph_sorted[i]][0]]),
         // this._dualGraph[this._dualGraph_sorted[i]][1]+": "+Math.floor(face_areas[this._dualGraph[this._dualGraph_sorted[i]][1]]));
@@ -364,9 +366,12 @@ export default class Mesh{
 
         // Create Spanning Tree ---------------------------
         let spanningTree = [];
+        // let angleTree = [];
+        // console.log(this._angles_sorted);
+        // console.log(this._dualGraph);
         for(let i=0; i<this._dualGraph_sorted.length; i++){
             let currentPair = this._dualGraph[this._dualGraph_sorted[i]].slice();
-            // currentPair[0] >= currentPair[1]
+            // let currentAngle = this._angles_sorted[this._dualGraph_sorted[i]];
 
             // Check if currentPair[0] is already a child of another node
             let isChild = false;
@@ -377,20 +382,24 @@ export default class Mesh{
                 }
             }
             if(isChild) continue;
-            else spanningTree.push(currentPair);
+            else spanningTree.push(currentPair);// angleTree.push(currentAngle);
         }
+        // let spanningTreeCopy = spanningTree.slice();
+        // console.log("Copy", spanningTreeCopy);
         this.completeSpanningTree(spanningTree);
-        console.log(spanningTree);
 
         this.spanningTree = spanningTree;
         // Create Spanning Tree ---------------------------
     }
 
+    // Recursive function to concatenate tree branches...
     completeSpanningTree(_spanningTree){
         for(let i=0; i<_spanningTree.length; i++){
             let currentNode = _spanningTree[i].slice();
+            // let currentAngle = _angleTree[i];
             for(let j=0; j<_spanningTree.length; j++){
                 let otherNode = _spanningTree[j].slice();
+                // let otherAngle = _angleTree[j].slice();
                 // If the first element of current node is the same as the last on otherNode:
                 // [2, 1] + [3, 2] -> [3, 2, 1]
                 if(currentNode[0] == otherNode[otherNode.length-1]){
@@ -402,4 +411,51 @@ export default class Mesh{
         }
     }
 
+    slice(){
+        console.log(this._dualGraph_sorted);
+        console.log(this._dualGraph);
+        console.log(this._spanningTree);
+    }
+
+    flatten(){
+        let flatMesh = new Mesh();
+        let flatVerts = [];
+        let flatFaces = [];
+        console.log("Spanning Tree", this._spanningTree);
+        for(let i=0; i<this._spanningTree.length; i++){
+            // console.log(this._dualGraph[this._dualGraph_sorted[i]], (this._angles_sorted[i]/Math.PI) * 180);
+            let branch = this._spanningTree[i];
+            let branchAngles = [];
+            for(let j=branch.length-1; j>0; j--){
+                // let face = this._faces[this._dualGraph[this._dualGraph_sorted[i]
+                // console.log(this.spanningTree[i][j]);
+                let thisFace = branch[j];
+                let nextFace = branch[j-1];
+
+                // Finding the right angle:
+                let k=0;
+                for(; k<this._dualGraph_sorted.length; k++){
+                    if(this._dualGraph[this._dualGraph_sorted[k]].includes(nextFace) && 
+                       this._dualGraph[this._dualGraph_sorted[k]].includes(thisFace)){
+                        break;
+                    }
+                }
+                console.log(k, thisFace, nextFace, (this._angles_sorted[k]/Math.PI)*180);
+               
+                let joiningVerts = [];
+                let vertsToRotate = [];
+                for(let l=0; l<this._faces[thisFace].length; l++){
+                    // console.log(this._faces[thisFace][l]);
+                    for(let m=0; m<this._faces[nextFace].length; m++){
+                        if(this._faces[thisFace][l] == this._faces[nextFace][m]) {
+                            // joiningVerts.push(this._verts[this._faces[thisFace][l]]);
+                            joiningVerts.push([l, m]);
+                        }
+                    }
+                }
+                
+                console.log("Joining Verts", joiningVerts);
+            }
+        }
+    }
 }
