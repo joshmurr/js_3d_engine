@@ -477,5 +477,117 @@ export class Mat44 extends Mat33{
         this.M[15] = 1;
     }
 
+    setAxisAngle(axis, theta){
+        let s = Math.sin(theta);
+        let c = Math.cos(theta);
+        let t = 1 - c;
 
+        let nAxis = axis.getCopy();;
+        nAxis.normalize();
+
+        // intermediate values
+        let tx = t*nAxis.x;  let ty = t*nAxis.y;  let tz = t*nAxis.z;
+        let sx = s*nAxis.x;  let sy = s*nAxis.y;  let sz = s*nAxis.z;
+        let txy = tx*nAxis.y; let tyz = ty*nAxis.z; let txz = tx*nAxis.z;
+
+        // set matrix
+        this.M[0] = tx*nAxis.x + c;
+        this.M[4] = txy - sz;
+        this.M[8] = txz + sy;
+        this.M[12] = 0;
+
+        this.M[1] = txy + sz;
+        this.M[5] = ty*nAxis.y + c;
+        this.M[9] = tyz - sx;
+        this.M[13] = 0;
+
+        this.M[2] = txz - sy;
+        this.M[6] = tyz + sx;
+        this.M[10] = tz*nAxis.z + c;
+        this.M[14] = 0;
+
+        this.M[3] = 0;
+        this.M[7] = 0;
+        this.M[11] = 0;
+        this.M[15] = 1;
+    }
+
+    setAxisAngle2(pointOnAxis, axis, angle){
+        // pointOnAxis(a, b, c)
+        // axis(u, v, w)
+        // angle
+        let a, b, c, u, v, w, u2, v2, w2, uv, uw, bv, cw, bw, cv, vw, au, cu, aw, av, bu;
+        let cos = Math.cos(angle);
+        let sin = Math.sin(angle);
+        let ct = 1-cos;
+
+        a = pointOnAxis.x; b = pointOnAxis.y; c = pointOnAxis.z;
+        u = axis.x;        v = axis.y;        w = axis.z;
+        u2 = u*u;          v2 = v*v;          w2 = w*w;
+        uv = u*v;          uw = u*w;          bv = b*v;
+        cw = c*w;          bw = b*w;          cv = c*v;
+        vw = v*w;          au = a*u;          cu = c*u;
+        aw = a*w;          av = a*v;          bu = b*u;
+
+        this.M[0] = u2+(v2+w2)*cos;
+        this.M[1] = uv*ct+w*sin;
+        this.M[2] = uv*ct-v*sin;
+        this.M[3] = 0;
+        this.M[4] = uv*ct-w*sin;
+        this.M[5] = v2+(u2+w2)*cos;
+        this.M[6] = vw*ct+u*sin;
+        this.M[7] = 0;
+        this.M[8] = uw*ct+v*sin;
+        this.M[9] = vw*ct-u*sin;
+        this.M[10] = w2+(u2+v2)*cos;
+        this.M[11] = 0;
+        this.M[12] = (a*(v2+w2)-u*(bv+cw))*ct+(bw-cv)*sin;
+        this.M[13] = (b*(u2+w2)-v*(au+cw))*ct+(cu-aw)*sin;
+        this.M[14] = (c*(u2+v2)-w*(au+bv))*ct+(av-bu)*sin;
+        this.M[15] = 1;
+    }
+
+    setQuaternionRotation(_quat){
+        let xs, ys, zs, wx, wy, wz, xx, xy, xz, yy, yz, zz;
+
+        xs = _quat.x+_quat.x;
+        ys = _quat.y+_quat.y;
+        zs = _quat.z+_quat.z;
+        wx = _quat.w*xs;
+        wy = _quat.w*ys;
+        wz = _quat.w*zs;
+        xx = _quat.x*xs;
+        xy = _quat.x*ys;
+        xz = _quat.x*zs;
+        yy = _quat.y*ys;
+        yz = _quat.y*zs;
+        zz = _quat.z*zs;
+
+        this.M[0] = 1 - (yy + zz);
+        this.M[4] = xy - wz;
+        this.M[8] = xz + wy;
+        this.M[12] = 0;
+
+        this.M[1] = xy + wz;
+        this.M[5] = 1 - (xx + zz);
+        this.M[9] = yz - wx;
+        this.M[13] = 0;
+
+        this.M[2] = xz - wy;
+        this.M[6] = yz + wx;
+        this.M[10] = 1 - (xx + yy);
+        this.M[14] = 0;
+
+        this.M[3] = 0;
+        this.M[7] = 0;
+        this.M[11] = 0;
+        this.M[15] = 1;
+    }
+
+    setTranslation(v){
+        this.setIdentity();
+        this.M[12] = v.x;
+        this.M[13] = v.y;
+        this.M[14] = v.z;
+    }
 }

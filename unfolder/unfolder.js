@@ -21,10 +21,10 @@ torus.createFaces();
 
 
 let meshes = {
-    "Irregular Octahedron": irregularOctahedron,
-    // "Icosahedron": icosahedron,
-    // "Octahedron": octahedron,
+    "Icosahedron": icosahedron,
+    "Octahedron": octahedron,
     "Cube": cube,
+    "Irregular Octahedron": irregularOctahedron,
     // "Torus": torus,
 };
 
@@ -38,12 +38,13 @@ gui.title("Drawing Style");
 gui.button("colour", "Colour", 0);
 gui.button("normals", "Face Normals", 0);
 gui.button("points", "Points", 0);
+gui.button("rotatedpoints", "Rotated Points", 1);
 // gui.button("midpoints", "Line Midpoints", 1);
 gui.button("wireframe", "Wireframe", 0);
 gui.button("face", "Faces", 1);
 gui.button("facenormallines", "Face Normal Lines", 0);
 gui.button("numbers", "Face ID", 1);
-gui.button("vertnumbers", "Vert ID", 0);
+gui.button("vertnumbers", "Vert ID", 1);
 gui.button("dualgraph", "Dual Graph", 0);
 gui.button("spanningtree", "Spanning Tree", 1);
 gui.title("Translation");
@@ -55,9 +56,9 @@ gui.slider("xRot",-Math.PI, Math.PI, 0, 0.1);
 gui.slider("yRot",-Math.PI, Math.PI, 0, 0.1);
 gui.slider("zRot",-Math.PI, Math.PI, 0, 0.1);
 gui.title("Scale");
-gui.slider("xScale",0.2, 4, 1.2, 0.2);
-gui.slider("yScale",0.2, 4, 1.2, 0.2);
-gui.slider("zScale",0.2, 4, 1.2, 0.2);
+gui.slider("xScale",0.2, 4, 0.4, 0.2);
+gui.slider("yScale",0.2, 4, 0.4, 0.2);
+gui.slider("zScale",0.2, 4, 0.4, 0.2);
 // gui.button("recalcnorms", "Recalculate Normals", 0);
 gui.button("reset", "Reset", 0);
 gui.dropdown("mesh", Object.keys(meshes));//.map(m => m.charAt(0).toUpperCase()+m.slice(1)));
@@ -84,12 +85,13 @@ for(let mesh in meshes){
 // irregularOctahedron.sortDualGraphByAngleBetweenFaces();
 // icosahedron.sortDualGraphByAngleBetweenFaces();
 
-// octahedron.createSpanningTree();
+octahedron.flatten();
+icosahedron.flatten();
 // console.log(icosahedron.dualGraph);
 // icosahedron.createSpanningTree();
 // irregularOctahedron.createSpanningTree();
-irregularOctahedron.flatten();
-// cube.flatten();
+// irregularOctahedron.flatten();
+cube.flatten();
 
 function draw(){
     renderer.render();

@@ -55,7 +55,7 @@ export class Vec4 extends Vec3{
 
     subtract(v){
         super.subtract(v);
-        if(v.constructor.type == "Vec4") this.w -= v.w;
+        /*if(v.constructor.type == "Vec4")*/ this.w -= v.w;
     }
 
     getSubtract(v){
@@ -154,6 +154,7 @@ export class Vec4 extends Vec3{
         this.z /= this.w;
         this.w = 1;
     }
+
 
 /*
  *     dot(v){

@@ -14,7 +14,6 @@ I've scoured the internet and have read a lot for this project. Here are a few o
 
 ### Graphics
 
-
 [Essential Math for Games Programmers](http://www.essentialmath.com/book.htm) and [accompanying code](https://github.com/jvanverth/essentialmath).
 
 [Scratchapixel 2.0](https://www.scratchapixel.com/)
@@ -34,6 +33,18 @@ I've scoured the internet and have read a lot for this project. Here are a few o
 [Jordan Santell: 3D Projectoio](https://jsantell.com/3d-projection/)
 
 [OpenGL-Tutorial: Matrices](http://www.opengl-tutorial.org/beginners-tutorials/tutorial-3-matrices/#the-projection-matrix)
+
+### Unfolding Algorithm
+
+[Houdini Gubbins: Unfolding Meshes](https://houdinigubbins.wordpress.com/2017/05/12/unfolding-geometry/)
+
+[Sergen Eren: Unfolding a Mesh](https://sergeneren.com/2018/09/27/unfolding-a-mesh/)
+
+[Sergen Eren: Spanning Trees](https://sergeneren.com/2018/09/24/spanning-trees/)
+
+[Krushkal's Algorithm](https://algorithms.tutorialhorizon.com/kruskals-algorithm-minimum-spanning-tree-mst-complete-java-implementation/)
+
+[Find Cycle in Undirected Graph](https://algorithms.tutorialhorizon.com/graph-find-cycle-in-undirected-graph-using-disjoint-set-union-find/)
 
 ### Tools 
 

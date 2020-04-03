@@ -174,4 +174,17 @@ export class Vec3{
     getCopy(){
         return new Vec3(this.x, this.y, this.z);
     }
+
+    rodriguesRotate(k, angle){
+        let k_cross_v = k.cross(this);
+        let k_dot_v = k.dot(this);
+
+        let b = k_cross_v.getMultiply(Math.sin(angle));
+        let c = k.getMultiply(k_dot_v);
+        c.multiply(1-Math.cos(angle));
+
+        this.multiply(Math.cos(angle));
+        this.add(b);
+        this.add(c);
+    }
 }

@@ -50,7 +50,7 @@ canvas{
 }
 
 .menuContainer{
-    width: 200px;
+    width: 160px;
     /* height: 100%; */
     background-color: red;
 }
@@ -101,12 +101,12 @@ button.selected{
 }
 
 .slider::-moz-range-thumb {
-    width: 2em;
-    height: 2em;
+    width: 1.4em;
+    height: 1.4em;
     background: #000;
     cursor: pointer;
     border: none;
-    border-radius: 3px;
+    border-radius: 2px;
 }
 
 @media screen and (min-width: 400px) {
@@ -116,7 +116,7 @@ button.selected{
 }
 
 /* Laptop */
-@media screen and (min-width: 600px) {
+@media screen and (min-width: 800px) {
     #menu * {
         display: block;
         height: 1.8em;
@@ -129,5 +129,13 @@ button.selected{
     #menu * {
         height: 2em;
         font-size: 1em;
+    }
+    .menuContainer {
+        width: 200px;
+    }
+    .slider::-moz-range-thumb {
+        width: 2em;
+        height: 2em;
+        border-radius: 3px;
     }
 }
