@@ -25,7 +25,7 @@ let meshes = {
     "Octahedron": octahedron,
     "Cube": cube,
     "Irregular Octahedron": irregularOctahedron,
-    // "Torus": torus,
+    "Torus": torus,
 };
 
 let gui = new GUI();
@@ -56,9 +56,9 @@ gui.slider("xRot",-Math.PI, Math.PI, 0, 0.1);
 gui.slider("yRot",-Math.PI, Math.PI, 0, 0.1);
 gui.slider("zRot",-Math.PI, Math.PI, 0, 0.1);
 gui.title("Scale");
-gui.slider("xScale",0.2, 4, 0.4, 0.2);
-gui.slider("yScale",0.2, 4, 0.4, 0.2);
-gui.slider("zScale",0.2, 4, 0.4, 0.2);
+gui.slider("xScale",0.2, 4, 1.4, 0.2);
+gui.slider("yScale",0.2, 4, 1.4, 0.2);
+gui.slider("zScale",0.2, 4, 1.4, 0.2);
 // gui.button("recalcnorms", "Recalculate Normals", 0);
 gui.button("reset", "Reset", 0);
 gui.dropdown("mesh", Object.keys(meshes));//.map(m => m.charAt(0).toUpperCase()+m.slice(1)));
@@ -92,6 +92,7 @@ icosahedron.flatten();
 // irregularOctahedron.createSpanningTree();
 // irregularOctahedron.flatten();
 cube.flatten();
+torus.flatten();
 
 function draw(){
     renderer.render();

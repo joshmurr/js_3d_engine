@@ -412,22 +412,29 @@ export default class Renderer{
             }
         }
         if(this.guiValues["rotatedpoints"]%2!==0){
-            for(let i=0; i<mesh.rotated_verts.length; i++){
-                // Get centroid
-                let p = this._MVP.getMultiplyVec(mesh.rotated_verts[i]);
-                // let z = p.w;
-                p.NDC();
-                xRange = (p.x + 1)*0.5;
-                yRange = 1-(p.y + 1)*0.5;
-                zRange  = (p.z + 1)*0.5;
-                xScreen = xRange * this.width;
-                yScreen = yRange * this.height;
-                // if(p.z < meshCentroid.z) this.ctx.fillStyle = "rgba(255,0,64,0.8)";
-                this.ctx.fillStyle = "rgba(0,"+(i/mesh.rotated_verts.length)*255+",0,1)";
-                this.ctx.beginPath();
-                this.ctx.arc(xScreen, yScreen, 2*zRange, 0, Math.PI*2);
-                this.ctx.closePath();
-                this.ctx.fill();
+            for(let i=0; i<mesh._flatTree.length; i++){
+                for (let j=0, len=mesh._flatTree[i].length; j < len; j++) {
+                    this.ctx.beginPath();
+                    for (let k=0, len=mesh._flatTree[i][j].length; k < len; k++) {
+                        let p = this._MVP.getMultiplyVec(mesh._flatTree[i][j][k]);
+                        // let z = p.w;
+                        p.NDC();
+                        xRange = (p.x + 1)*0.5;
+                        yRange = 1-(p.y + 1)*0.5;
+                        zRange  = (p.z + 1)*0.5;
+                        xScreen = xRange * this.width;
+                        yScreen = yRange * this.height;
+                        // if(p.z < meshCentroid.z) this.ctx.fillStyle = "rgba(255,0,64,0.8)";
+                        this.ctx.strokeStyle = "rgba(0,"+255+",0,1)";
+                        this.ctx.lineTo(xScreen, yScreen);
+                        // this.ctx.arc(xScreen, yScreen, 2*zRange, 0, Math.PI*2);
+                        // this.ctx.closePath();
+                        // this.ctx.fill();
+                    }
+                    this.ctx.closePath();
+                    this.ctx.stroke();
+                    
+                }
             }
         }
         // Points -----------------------*---

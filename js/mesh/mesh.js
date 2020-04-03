@@ -17,6 +17,7 @@ export default class Mesh{
     _angles_sorted = [];
     _midpoints = [];
     _rotated_verts = [];
+    _flatTree = [];
 
     constructor(){
         this.modelMatrix = new Mat44();
@@ -426,21 +427,18 @@ export default class Mesh{
     }
 
     flatten(){
-        let flatMesh = new Mesh();
-        let flatVerts = [];
-        let flatFaces = [];
         let axisAngleMat = new Mat44();
+        let flatTree = [];
         // console.log("Verts", this._verts);
         // console.log("Faces", this._faces);
         console.log("Spanning Tree", this._spanningTree);
         for(let i=0; i<this._spanningTree.length; i++){
             // console.log(this._dualGraph[this._dualGraph_sorted[i]], (this._angles_sorted[i]/Math.PI) * 180);
             let branch = this._spanningTree[i];
-            let branchAngles = [];
-            console.error("BRANCH", branch);
-                let previous_points = [];
+            let flatBranch = [];
+            // console.error("BRANCH", branch);
             for(let j=branch.length-1; j>0; j--){
-                console.warn("*J*", j);
+                // console.warn("*J*", j);
                 // let face = this._faces[this._dualGraph[this._dualGraph_sorted[i]
                 // console.log(this.spanningTree[i][j]);
                 let thisFace = branch[j];
@@ -457,7 +455,7 @@ export default class Mesh{
 
                 let angle = this._angles_sorted[k];
                 let printAngle = (angle/Math.PI)*180;
-                console.log("thisFace", thisFace, "nextFace", nextFace, "angle", printAngle);
+                // console.log("thisFace", thisFace, "nextFace", nextFace, "angle", printAngle);
 
                 // ROTATE POINT[S] AND RECREATE FLATTENED FACE ---------------------------------
                 // Find the shared verts between this face and the next.
@@ -478,32 +476,45 @@ export default class Mesh{
                 }
                 // console.log("thisFace", this._faces[thisFace]);
                 // console.log("vertsToRotate", vertsToRotate);
-                console.log("Joining Verts", this._faces[thisFace][joiningVerts[0]], this._faces[thisFace][joiningVerts[1]]);
-                console.log("Verts to Rotate", vertsToRotate[0], vertsToRotate[1]);
+                // console.log("Joining Verts", this._faces[thisFace][joiningVerts[0]], this._faces[thisFace][joiningVerts[1]]);
+                // console.log("Verts to Rotate", vertsToRotate[0], vertsToRotate[1]);
 
                 // Rotate the verts around the axis formed by the shared edge with the next face
                 let p0 = this._verts[this._faces[thisFace][joiningVerts[0]]];
                 let p1 = this._verts[this._faces[thisFace][joiningVerts[1]]];
-                console.log("p0", p0, "p1", p1);
+                // console.log("p0", p0, "p1", p1);
                 let axis = p0.getSubtract(p1);
                 axis.normalize();
                 // console.log("angle", printAngle);
                 // console.log("axis", axis);
                 // let rotated_verts = [];
+                let flatFace = [];
+                flatFace.push(p0.getCopy());
                 axisAngleMat.setAxisAngle2(p0, axis, (Math.PI*2)-angle);
-                for(let m=0; m<previous_points.length; m++){
-                    previous_points[m] = axisAngleMat.getMultiplyVec(previous_points[m]);
+                for(let m=0; m<flatBranch.length; m++){
+                    for(let n=0; n<flatBranch[m].length; n++){
+                        flatBranch[m][n] = axisAngleMat.getMultiplyVec(flatBranch[m][n]);
+                    }
                 }
+                let rotatedVerts = [];
                 for(let l=0; l<vertsToRotate.length; l++){
                     let rotatedVec = axisAngleMat.getMultiplyVec(this._verts[vertsToRotate[l]]);
+                    // rotatedVerts.push(rotatedVec);
+                    flatFace.push(rotatedVec.getCopy());
                     // this._rotated_verts.push(rotatedVec);
-                    previous_points.push(rotatedVec);
+                    // previous_points.push(rotatedVec);
                     // console.log("Original vec", this._verts[vertsToRotate[l]], "Rotated Vec", rotatedVec);
                 }
                 // Remake Face
+
+                flatFace.push(p1.getCopy());
+                flatBranch.unshift(flatFace);
+                // console.log("Flat Branch", flatBranch);
             }
-                this._rotated_verts.push(...previous_points);
+            this._flatTree.push(flatBranch);
+
+            // this._rotated_verts.push(...previous_points);
         }
+        console.log("Flat Tree", this._flatTree);
     }
-    // console.log(this._rotated_verts);
 }
