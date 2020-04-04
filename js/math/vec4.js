@@ -155,6 +155,10 @@ export class Vec4 extends Vec3{
         this.w = 1;
     }
 
+    getVec3(){
+        return new Vec3(this.x, this.y, this.z);
+    }
+
 
 /*
  *     dot(v){

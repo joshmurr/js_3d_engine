@@ -477,42 +477,9 @@ export class Mat44 extends Mat33{
         this.M[15] = 1;
     }
 
-    setAxisAngle(axis, theta){
-        let s = Math.sin(theta);
-        let c = Math.cos(theta);
-        let t = 1 - c;
-
-        let nAxis = axis.getCopy();;
-        nAxis.normalize();
-
-        // intermediate values
-        let tx = t*nAxis.x;  let ty = t*nAxis.y;  let tz = t*nAxis.z;
-        let sx = s*nAxis.x;  let sy = s*nAxis.y;  let sz = s*nAxis.z;
-        let txy = tx*nAxis.y; let tyz = ty*nAxis.z; let txz = tx*nAxis.z;
-
-        // set matrix
-        this.M[0] = tx*nAxis.x + c;
-        this.M[4] = txy - sz;
-        this.M[8] = txz + sy;
-        this.M[12] = 0;
-
-        this.M[1] = txy + sz;
-        this.M[5] = ty*nAxis.y + c;
-        this.M[9] = tyz - sx;
-        this.M[13] = 0;
-
-        this.M[2] = txz - sy;
-        this.M[6] = tyz + sx;
-        this.M[10] = tz*nAxis.z + c;
-        this.M[14] = 0;
-
-        this.M[3] = 0;
-        this.M[7] = 0;
-        this.M[11] = 0;
-        this.M[15] = 1;
-    }
-
-    setAxisAngle2(pointOnAxis, axis, angle){
+    setAxisAngle(pointOnAxis, axis, angle){
+        // Tried a few, this one actually works:
+        // https://sites.google.com/site/glennmurray/Home/rotation-matrices-and-formulas/rotation-about-an-arbitrary-axis-in-3-dimensions
         // pointOnAxis(a, b, c)
         // axis(u, v, w)
         // angle

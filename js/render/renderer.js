@@ -218,6 +218,17 @@ export default class Renderer{
         this._wireframePoints =  new Array(maxArraySize); // Number of indices * 3 for P0 P1 P2
     }
 
+    initMVP(){
+
+    }
+
+    lookAtNextFace(){
+        let mesh = this.scene.meshes[this.guiValues["mesh"]];
+        let centroid = mesh.centroids
+
+
+    }
+
 
 
     render(){
@@ -325,7 +336,7 @@ export default class Renderer{
                 }
                 this.ctx.closePath();
                 this.ctx.fill();
-            } 
+            }
             // Face -------------------------*---
 
             // Wireframe --------------------**--
@@ -387,6 +398,11 @@ export default class Renderer{
                 this.ctx.stroke();
             }
             // Face Normal Lines ------------**--
+            if(this.guiValues["newcam"]%2!==0){
+                // let lookAt = (new Vec3(0, 0, 30));
+                // let cam = mesh.norms[0].getMultiply(2);
+                // this._viewMat = this.createViewMatrix(this.scene.camera, lookAt, new Vec3(0, 1, 0));
+            }
         }
         // VERT-BY-VERT RENDERING ------------------------------------*---
         // Points -----------------------*---
@@ -412,29 +428,26 @@ export default class Renderer{
             }
         }
         if(this.guiValues["rotatedpoints"]%2!==0){
-            for(let i=0; i<mesh._flatTree.length; i++){
-                for (let j=0, len=mesh._flatTree[i].length; j < len; j++) {
-                    this.ctx.beginPath();
-                    for (let k=0, len=mesh._flatTree[i][j].length; k < len; k++) {
-                        let p = this._MVP.getMultiplyVec(mesh._flatTree[i][j][k]);
-                        // let z = p.w;
-                        p.NDC();
-                        xRange = (p.x + 1)*0.5;
-                        yRange = 1-(p.y + 1)*0.5;
-                        zRange  = (p.z + 1)*0.5;
-                        xScreen = xRange * this.width;
-                        yScreen = yRange * this.height;
-                        // if(p.z < meshCentroid.z) this.ctx.fillStyle = "rgba(255,0,64,0.8)";
-                        this.ctx.strokeStyle = "rgba(0,"+255+",0,1)";
-                        this.ctx.lineTo(xScreen, yScreen);
-                        // this.ctx.arc(xScreen, yScreen, 2*zRange, 0, Math.PI*2);
-                        // this.ctx.closePath();
-                        // this.ctx.fill();
-                    }
-                    this.ctx.closePath();
-                    this.ctx.stroke();
-                    
+            for(let i=0; i<mesh._flat_faces.length; i++){
+                this.ctx.beginPath();
+                for (let j=0, len=mesh._flat_faces[i].length; j < len; j++) {
+                    let p = this._MVP.getMultiplyVec(mesh._flat_faces[i][j]);
+                    // let z = p.w;
+                    p.NDC();
+                    xRange = (p.x + 1)*0.5;
+                    yRange = 1-(p.y + 1)*0.5;
+                    zRange  = (p.z + 1)*0.5;
+                    xScreen = xRange * this.width;
+                    yScreen = yRange * this.height;
+                    // if(p.z < meshCentroid.z) this.ctx.fillStyle = "rgba(255,0,64,0.8)";
+                    this.ctx.strokeStyle = "rgba(0,"+255+",0,1)";
+                    this.ctx.lineTo(xScreen, yScreen);
+                    // this.ctx.arc(xScreen, yScreen, 2*zRange, 0, Math.PI*2);
+                    // this.ctx.closePath();
+                    // this.ctx.fill();
                 }
+                this.ctx.closePath();
+                this.ctx.stroke();
             }
         }
         // Points -----------------------*---
@@ -528,6 +541,30 @@ export default class Renderer{
             }
         }
         // Spanning Tree ----------------**--
+
+        for(let i=0; i<mesh._faces_2d.length; i++){
+            let scale = 100;
+            let face = mesh._faces_2d[i];
+            this.ctx.beginPath();
+            this.ctx.strokeStyle = "black";
+            this.ctx.lineWidth = 2;
+            for(let j=0; j<face.length; j++){
+                let screen = face[j];
+                xScreen = screen[0]*scale;
+                yScreen = screen[1]*scale;
+                xScreen += 300;
+                yScreen += 300;
+                xScreen += i*120;
+                // yScreen += 300;
+                // console.log(xScreen, yScreen);
+                this.ctx.lineTo(xScreen, yScreen);
+            }
+            this.ctx.closePath();
+            this.ctx.stroke();
+
+
+        }
+
 
         // END OF MAIN RENDER LOOP ----------------------------------*****-
         if(this.guiValues["reset"]){

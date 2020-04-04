@@ -17,7 +17,9 @@ export default class Mesh{
     _angles_sorted = [];
     _midpoints = [];
     _rotated_verts = [];
-    _flatTree = [];
+    _flat_faces = [];
+    _flat_norms = [];
+    _faces_2d = [];
 
     constructor(){
         this.modelMatrix = new Mat44();
@@ -420,101 +422,174 @@ export default class Mesh{
         }
     }
 
-    slice(){
-        console.log(this._dualGraph_sorted);
-        console.log(this._dualGraph);
-        console.log(this._spanningTree);
-    }
-
     flatten(){
-        let axisAngleMat = new Mat44();
-        let flatTree = [];
-        // console.log("Verts", this._verts);
-        // console.log("Faces", this._faces);
-        console.log("Spanning Tree", this._spanningTree);
-        for(let i=0; i<this._spanningTree.length; i++){
-            // console.log(this._dualGraph[this._dualGraph_sorted[i]], (this._angles_sorted[i]/Math.PI) * 180);
-            let branch = this._spanningTree[i];
-            let flatBranch = [];
-            // console.error("BRANCH", branch);
-            for(let j=branch.length-1; j>0; j--){
-                // console.warn("*J*", j);
-                // let face = this._faces[this._dualGraph[this._dualGraph_sorted[i]
-                // console.log(this.spanningTree[i][j]);
-                let thisFace = branch[j];
-                let nextFace = branch[j-1];
+        let xz_normal = new Vec4(0, 1, 0, 1);
+        let moveToGroundMatrix = new Mat44();
+        let rotateToGroundMatrix = new Mat44();
+        for(let i=0; i<this._indices_sorted.length; i++){
+            let index = this._indices_sorted[i];
+            let face = this._faces[index];
+            let normal = this._norms[index];
+            let centroid = this._centroids[index];
 
-                // Finding the right angle:
-                let k=0;
-                for(; k<this._dualGraph_sorted.length; k++){
-                    if(this._dualGraph[this._dualGraph_sorted[k]].includes(nextFace) &&
-                        this._dualGraph[this._dualGraph_sorted[k]].includes(thisFace)){
-                        break;
-                    }
-                }
+            // Check angle with ground plane
+            let dp = normal.dot(xz_normal);
+            let angle = Math.acos(dp); // Pi minus angle to get interior
 
-                let angle = this._angles_sorted[k];
-                let printAngle = (angle/Math.PI)*180;
-                // console.log("thisFace", thisFace, "nextFace", nextFace, "angle", printAngle);
+            let centroidToGround = new Vec3(0, -centroid.y, 0);
+            let axis = new Vec3(centroid.x, 0, centroid.z);
+            axis.normalize();
+            moveToGroundMatrix.setTranslation(centroidToGround);
+            rotateToGroundMatrix.setAxisAngle(centroidToGround, axis, angle);
 
-                // ROTATE POINT[S] AND RECREATE FLATTENED FACE ---------------------------------
-                // Find the shared verts between this face and the next.
-                let joiningVerts = [];
-                for(let l=0; l<this._faces[thisFace].length; l++){
-                    for(let m=0; m<this._faces[nextFace].length; m++){
-                        if(this._faces[thisFace][l] == this._faces[nextFace][m]) {
-                            joiningVerts.push(l);
-                        }
-                    }
-                }
+            let faceCOPY = [];
+            for(let j=0; j<face.length; j++){
+                let v = moveToGroundMatrix.getMultiplyVec(this._verts[face[j]]);
+                let n = moveToGroundMatrix.getMultiplyVec(normal);
+                v = rotateToGroundMatrix.getMultiplyVec(v);
+                n = rotateToGroundMatrix.getMultiplyVec(n);
 
-                // Find the UNSHARED verts to rotate them --------------------
-                joiningVerts.sort();
-                let vertsToRotate = this._faces[thisFace].slice(); // Get Copy
-                for(let l=joiningVerts.length-1; l>=0; l--){ // Remove from the back..
-                    vertsToRotate.splice(joiningVerts[l], 1);
-                }
-                // console.log("thisFace", this._faces[thisFace]);
-                // console.log("vertsToRotate", vertsToRotate);
-                // console.log("Joining Verts", this._faces[thisFace][joiningVerts[0]], this._faces[thisFace][joiningVerts[1]]);
-                // console.log("Verts to Rotate", vertsToRotate[0], vertsToRotate[1]);
 
-                // Rotate the verts around the axis formed by the shared edge with the next face
-                let p0 = this._verts[this._faces[thisFace][joiningVerts[0]]];
-                let p1 = this._verts[this._faces[thisFace][joiningVerts[1]]];
-                // console.log("p0", p0, "p1", p1);
-                let axis = p0.getSubtract(p1);
-                axis.normalize();
-                // console.log("angle", printAngle);
-                // console.log("axis", axis);
-                // let rotated_verts = [];
-                let flatFace = [];
-                flatFace.push(p0.getCopy());
-                axisAngleMat.setAxisAngle2(p0, axis, (Math.PI*2)-angle);
-                for(let m=0; m<flatBranch.length; m++){
-                    for(let n=0; n<flatBranch[m].length; n++){
-                        flatBranch[m][n] = axisAngleMat.getMultiplyVec(flatBranch[m][n]);
-                    }
-                }
-                let rotatedVerts = [];
-                for(let l=0; l<vertsToRotate.length; l++){
-                    let rotatedVec = axisAngleMat.getMultiplyVec(this._verts[vertsToRotate[l]]);
-                    // rotatedVerts.push(rotatedVec);
-                    flatFace.push(rotatedVec.getCopy());
-                    // this._rotated_verts.push(rotatedVec);
-                    // previous_points.push(rotatedVec);
-                    // console.log("Original vec", this._verts[vertsToRotate[l]], "Rotated Vec", rotatedVec);
-                }
-                // Remake Face
-
-                flatFace.push(p1.getCopy());
-                flatBranch.unshift(flatFace);
-                // console.log("Flat Branch", flatBranch);
+                // v.add(normal);
+                faceCOPY.push(v);
             }
-            this._flatTree.push(flatBranch);
-
-            // this._rotated_verts.push(...previous_points);
+            this._flat_faces.push(faceCOPY);
+            // this._flat_norms.push(copy);
         }
-        console.log("Flat Tree", this._flatTree);
+        // console.log(this._flat_faces);
+        // this._flat_faces is now a copy of faces with their own points at the same face ID
     }
+
+    create2dCoordsFromFaces(){
+        // console.warn("TEST");
+        // let p = new Vec3(1, 7, -3);
+        // let O = new Vec3(-1,3,1);
+        // O.normalize();
+        // let n = O.getCopy();
+        // let e1 = new Vec3(1/(Math.SQRT2), 0, 1/Math.SQRT2);
+        // let e2 = new Vec3(-3/Math.sqrt(22), -2/Math.sqrt(22), 3/Math.sqrt(22));
+        // let pO = p.getSubtract(O);
+        // let t1 = e1.dot(pO);
+        // let t2 = e2.dot(pO);
+        // console.log("O", O, "e1", e1, "e2", e2);
+        // console.log(n.dot(e1), n.dot(e2), e1.dot(e2));
+        // console.log("t1", t1, "t2", t2);
+        // console.warn("END TEST");
+        /*
+            let p0 = this.verts[this.faces[i][0]];
+            let p1 = this.verts[this.faces[i][1]];
+            let p2 = this.verts[this.faces[i][2]];
+
+            let p0subp1 = p1.getSubtract(p0);
+            let p2subp0 = p2.getSubtract(p0);
+
+            let norm = p0subp1.cross(p2subp0);
+            norm.normalize();
+            norms.push(norm);
+        */
+
+        for(let i=0; i<this._indices_sorted.length; i++){
+            let index = this._indices_sorted[i];
+            let face = this._faces[index];
+
+            let p0 = this._verts[face[0]].getVec3();
+            let p1 = this._verts[face[1]].getVec3();
+            let p2 = this._verts[face[face.length-1]].getVec3();
+
+            let O = p0.getCopy();
+
+            let d = p2.getSubtract(p0);
+            d.normalize();
+            let v = p1.getSubtract(p0);
+            let t = v.dot(d);
+            let b = d.getMultiply(-t);
+            let p = p1.getSubtract(b);
+
+            let e1 = d;
+            let e2 = p1.getAdd(p);
+            e2.normalize();
+
+            let n = e1.cross(e2);
+
+            // console.log(face);
+            // let normal = this._norms[index];
+            // let centroid = this._centroids[index];
+
+            // let O = this._verts[face[0]].getVec3();   // Origin = first point on face
+            // let p1 = this._verts[face[1]].getVec3();
+            // let e1 = this._verts[face[face.length-1]].getVec3();
+            // // let e1 = p2.getSubtract(O);//.getCopy();
+            // // e1.normalize();
+            // // let v1 = p1.getSubtract(O); // Hypotenuse
+            // // v1.normalize();
+            // // v1.printProps();
+//
+            // let len_v1 = p1.length;
+            // let cosTheta = p1.dot(e1) / (e1.length * len_v1)
+            // let scale = len_v1 * cosTheta;
+            // // console.log(scale);
+            // let b = O.getMultiply(scale);
+            // let _p1 = p1.getSubtract(b);
+            // let e2 = _p1.getSubtract(O);
+            // let len_c = c.length;
+            // c.normalize();
+
+            // b.printProps();
+            // let B = O.getCopy();
+            // B.add(b);
+
+            // let e2 = O.getM(c);
+            // let e2 = O.getCopy();
+            // e2.add(c);
+
+            // console.log("O", O, "p1", p1, "p2", p2, "e1", e1);
+            // O.normalize();
+            // let n = O.getCopy();
+            // n.normalize();
+            // Axis along base of polygon
+            // let e1 = this._verts[face[face.length-1]].getVec3().getSubtract(O);//.getCopy();
+
+            // let v1 = p1.getSubtract(O); // Hypotenuse
+
+
+            // let p1 = this._verts[face[1]].getCopy();
+            // let len_p1 = p1.length;
+            // let cosTheta = O.dot(p1) / (O.length * len_p1)
+            // let scale = len_p1 * cosTheta;
+            // let b = e1.getMultiply(scale);
+            
+            // let c = p1.getSubtract(B);
+            // c.normalize();
+            // let e2 = O.getMultiply(
+
+            // console.log(p1, b);
+            // let e2 = c.getSubtract(b);
+            // console.log(_e2);
+            // let e2 = _e2.getSubtract(O);
+            // e2.normalize();
+            // console.log("e1", e1, "e2", e2,  "b", b, "cosTheta", cosTheta);
+
+            // let n = e2.cross(e1);
+
+
+            // e1.normalize();
+            // let e2 = n.cross(e1);//this._verts[face[face.length-1]].getCopy();
+            // e2.normalize();
+            // let e1 = e2.cross(n);
+            let face2d = [];
+            // console.log("O", O, "n", n, "e1", e1, "e2", e2);
+            console.log(n.dot(e1), n.dot(e2), e1.dot(e2)); // ( 0, 0, 0 )
+            for(let vert in face){
+                let p_minus_O = this._verts[vert].getVec3().getSubtract(O);
+                let t1 = e1.dot(p_minus_O);
+                let t2 = e2.dot(p_minus_O);
+                face2d.push([t1,t2]);
+            }
+            this._faces_2d.push(face2d);
+
+        }
+        console.log(this._faces_2d);
+    }
+
+    
 }
