@@ -175,6 +175,12 @@ export class Vec3{
         return new Vec3(this.x, this.y, this.z);
     }
 
+    round(){
+        this.x = Utils.round(this.x);
+        this.y = Utils.round(this.y);
+        this.z = Utils.round(this.z);
+    }
+
     rodriguesRotate(k, angle){
         let k_cross_v = k.cross(this);
         let k_dot_v = k.dot(this);

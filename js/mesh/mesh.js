@@ -491,25 +491,51 @@ export default class Mesh{
         for(let i=0; i<this._indices_sorted.length; i++){
             let index = this._indices_sorted[i];
             let face = this._faces[index];
+            console.log(face);
 
-            let p0 = this._verts[face[0]].getVec3();
-            let p1 = this._verts[face[1]].getVec3();
-            let p2 = this._verts[face[face.length-1]].getVec3();
+            let p0 = this._verts[face[0]].getCopy();
+            let p1 = this._verts[face[1]].getCopy();
+            let p2 = this._verts[face[face.length-1]].getCopy();
 
-            let O = p0.getCopy();
+            console.log(p0, p1, p2);
+//
+            // let v = p1.getSubtract(p0);
+            // v.normalize();
+            // let d = p2.getSubtract(p0);
+            // d.normalize();
+            // let t = v.dot(d);// / (v.length * d.length);
+            // let b = d.getMultiply(t);
+            // let p = p0.getAdd(b);
 
-            let d = p2.getSubtract(p0);
-            d.normalize();
-            let v = p1.getSubtract(p0);
-            let t = v.dot(d);
-            let b = d.getMultiply(-t);
-            let p = p1.getSubtract(b);
+            let loc0 = p0.getCopy();
+            let locX = p1.getSubtract(loc0);
 
-            let e1 = d;
-            let e2 = p1.getAdd(p);
-            e2.normalize();
+            let tmp = p2.getSubtract(loc0);
+            let n = locX.cross(tmp);
+            // p.add(O);
 
-            let n = e1.cross(e2);
+            // tmp.normalize();
+            // n.normalize();
+            let locY = n.cross(locX);
+
+
+
+            locX.normalize();
+            locY.normalize();
+
+            // locX.round();
+            // locY.round();
+            // n.round();
+
+
+
+            // let n = d.cross(e2);
+
+
+            // let e1 = d;
+            // let e2 = p1.getAdd(p);
+            // e2.normalize();
+
 
             // console.log(face);
             // let normal = this._norms[index];
@@ -578,11 +604,12 @@ export default class Mesh{
             // let e1 = e2.cross(n);
             let face2d = [];
             // console.log("O", O, "n", n, "e1", e1, "e2", e2);
-            console.log(n.dot(e1), n.dot(e2), e1.dot(e2)); // ( 0, 0, 0 )
-            for(let vert in face){
-                let p_minus_O = this._verts[vert].getVec3().getSubtract(O);
-                let t1 = e1.dot(p_minus_O);
-                let t2 = e2.dot(p_minus_O);
+            console.log(n.dot(locX), n.dot(locY), locX.dot(locY)); // ( 0, 0, 0 )
+            for(let i=0; i<face.length; i++){
+                let p_minus_O = this._verts[face[i]].getCopy();
+                p_minus_O.getSubtract(loc0);
+                let t1 = locX.dot(p_minus_O);
+                let t2 = locY.dot(p_minus_O);
                 face2d.push([t1,t2]);
             }
             this._faces_2d.push(face2d);

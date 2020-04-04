@@ -89,7 +89,7 @@ for(let mesh in meshes){
 octahedron.create2dCoordsFromFaces();
 cube.create2dCoordsFromFaces();
 icosahedron.create2dCoordsFromFaces();
-// torus.create2dCoordsFromFaces();
+torus.create2dCoordsFromFaces();
 // icosahedron.flatten();
 // console.log(icosahedron.dualGraph);
 // icosahedron.createSpanningTree();

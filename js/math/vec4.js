@@ -53,6 +53,10 @@ export class Vec4 extends Vec3{
         if(v.constructor.type == "Vec4") this.w += v.w;
     }
 
+    getAdd(v){
+        return new Vec4(this.x+v.x, this.y+v.y, this.z+v.z, this.w+v.w);
+    }
+
     subtract(v){
         super.subtract(v);
         /*if(v.constructor.type == "Vec4")*/ this.w -= v.w;
@@ -157,6 +161,13 @@ export class Vec4 extends Vec3{
 
     getVec3(){
         return new Vec3(this.x, this.y, this.z);
+    }
+
+    round(){
+        this.x = Utils.round(this.x);
+        this.y = Utils.round(this.y);
+        this.z = Utils.round(this.z);
+        this.w = Utils.round(this.w);
     }
 
 
