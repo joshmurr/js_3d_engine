@@ -87,16 +87,11 @@ for(let mesh in meshes){
 // icosahedron.sortDualGraphByAngleBetweenFaces();
 
 octahedron.create2dCoordsFromFaces();
-cube.create2dCoordsFromFaces();
-icosahedron.create2dCoordsFromFaces();
-torus.create2dCoordsFromFaces();
-// icosahedron.flatten();
-// console.log(icosahedron.dualGraph);
-// icosahedron.createSpanningTree();
-// irregularOctahedron.createSpanningTree();
-// irregularOctahedron.flatten();
-// cube.flatten();
-// torus.flatten();
+octahedron.layoutNet();
+// cube.create2dCoordsFromFaces();
+// icosahedron.create2dCoordsFromFaces();
+// torus.create2dCoordsFromFaces();
+// irregularOctahedron.create2dCoordsFromFaces();
 
 function draw(){
     renderer.render();

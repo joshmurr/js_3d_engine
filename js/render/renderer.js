@@ -553,9 +553,9 @@ export default class Renderer{
                 xScreen = screen[0]*scale;
                 yScreen = screen[1]*scale;
                 xScreen += 300;
-                yScreen += 300;
-                xScreen += i*120;
-                // yScreen += 300;
+                yScreen += 100;
+                // xScreen += i*120;
+                yScreen += i*30;
                 // console.log(xScreen, yScreen);
                 this.ctx.lineTo(xScreen, yScreen);
             }

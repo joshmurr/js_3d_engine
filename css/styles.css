@@ -116,7 +116,7 @@ button.selected{
 }
 
 /* Laptop */
-@media screen and (min-width: 800px) {
+@media screen and (min-width: 600px) {
     #menu * {
         display: block;
         height: 1.8em;
@@ -125,7 +125,7 @@ button.selected{
 }
 
 /* Big Screen */
-@media screen and (min-width: 1280px) {
+@media screen and (min-width: 1400px) {
     #menu * {
         height: 2em;
         font-size: 1em;

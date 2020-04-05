@@ -461,150 +461,24 @@ export default class Mesh{
     }
 
     create2dCoordsFromFaces(){
-        // console.warn("TEST");
-        // let p = new Vec3(1, 7, -3);
-        // let O = new Vec3(-1,3,1);
-        // O.normalize();
-        // let n = O.getCopy();
-        // let e1 = new Vec3(1/(Math.SQRT2), 0, 1/Math.SQRT2);
-        // let e2 = new Vec3(-3/Math.sqrt(22), -2/Math.sqrt(22), 3/Math.sqrt(22));
-        // let pO = p.getSubtract(O);
-        // let t1 = e1.dot(pO);
-        // let t2 = e2.dot(pO);
-        // console.log("O", O, "e1", e1, "e2", e2);
-        // console.log(n.dot(e1), n.dot(e2), e1.dot(e2));
-        // console.log("t1", t1, "t2", t2);
-        // console.warn("END TEST");
-        /*
-            let p0 = this.verts[this.faces[i][0]];
-            let p1 = this.verts[this.faces[i][1]];
-            let p2 = this.verts[this.faces[i][2]];
-
-            let p0subp1 = p1.getSubtract(p0);
-            let p2subp0 = p2.getSubtract(p0);
-
-            let norm = p0subp1.cross(p2subp0);
-            norm.normalize();
-            norms.push(norm);
-        */
-
         for(let i=0; i<this._indices_sorted.length; i++){
             let index = this._indices_sorted[i];
             let face = this._faces[index];
-            console.log(face);
 
             let p0 = this._verts[face[0]].getCopy();
             let p1 = this._verts[face[1]].getCopy();
             let p2 = this._verts[face[face.length-1]].getCopy();
-
-            console.log(p0, p1, p2);
-//
-            // let v = p1.getSubtract(p0);
-            // v.normalize();
-            // let d = p2.getSubtract(p0);
-            // d.normalize();
-            // let t = v.dot(d);// / (v.length * d.length);
-            // let b = d.getMultiply(t);
-            // let p = p0.getAdd(b);
 
             let loc0 = p0.getCopy();
             let locX = p1.getSubtract(loc0);
 
             let tmp = p2.getSubtract(loc0);
             let n = locX.cross(tmp);
-            // p.add(O);
-
-            // tmp.normalize();
-            // n.normalize();
             let locY = n.cross(locX);
-
-
 
             locX.normalize();
             locY.normalize();
-
-            // locX.round();
-            // locY.round();
-            // n.round();
-
-
-
-            // let n = d.cross(e2);
-
-
-            // let e1 = d;
-            // let e2 = p1.getAdd(p);
-            // e2.normalize();
-
-
-            // console.log(face);
-            // let normal = this._norms[index];
-            // let centroid = this._centroids[index];
-
-            // let O = this._verts[face[0]].getVec3();   // Origin = first point on face
-            // let p1 = this._verts[face[1]].getVec3();
-            // let e1 = this._verts[face[face.length-1]].getVec3();
-            // // let e1 = p2.getSubtract(O);//.getCopy();
-            // // e1.normalize();
-            // // let v1 = p1.getSubtract(O); // Hypotenuse
-            // // v1.normalize();
-            // // v1.printProps();
-//
-            // let len_v1 = p1.length;
-            // let cosTheta = p1.dot(e1) / (e1.length * len_v1)
-            // let scale = len_v1 * cosTheta;
-            // // console.log(scale);
-            // let b = O.getMultiply(scale);
-            // let _p1 = p1.getSubtract(b);
-            // let e2 = _p1.getSubtract(O);
-            // let len_c = c.length;
-            // c.normalize();
-
-            // b.printProps();
-            // let B = O.getCopy();
-            // B.add(b);
-
-            // let e2 = O.getM(c);
-            // let e2 = O.getCopy();
-            // e2.add(c);
-
-            // console.log("O", O, "p1", p1, "p2", p2, "e1", e1);
-            // O.normalize();
-            // let n = O.getCopy();
-            // n.normalize();
-            // Axis along base of polygon
-            // let e1 = this._verts[face[face.length-1]].getVec3().getSubtract(O);//.getCopy();
-
-            // let v1 = p1.getSubtract(O); // Hypotenuse
-
-
-            // let p1 = this._verts[face[1]].getCopy();
-            // let len_p1 = p1.length;
-            // let cosTheta = O.dot(p1) / (O.length * len_p1)
-            // let scale = len_p1 * cosTheta;
-            // let b = e1.getMultiply(scale);
-            
-            // let c = p1.getSubtract(B);
-            // c.normalize();
-            // let e2 = O.getMultiply(
-
-            // console.log(p1, b);
-            // let e2 = c.getSubtract(b);
-            // console.log(_e2);
-            // let e2 = _e2.getSubtract(O);
-            // e2.normalize();
-            // console.log("e1", e1, "e2", e2,  "b", b, "cosTheta", cosTheta);
-
-            // let n = e2.cross(e1);
-
-
-            // e1.normalize();
-            // let e2 = n.cross(e1);//this._verts[face[face.length-1]].getCopy();
-            // e2.normalize();
-            // let e1 = e2.cross(n);
             let face2d = [];
-            // console.log("O", O, "n", n, "e1", e1, "e2", e2);
-            console.log(n.dot(locX), n.dot(locY), locX.dot(locY)); // ( 0, 0, 0 )
             for(let i=0; i<face.length; i++){
                 let p_minus_O = this._verts[face[i]].getCopy();
                 p_minus_O.getSubtract(loc0);
@@ -612,11 +486,70 @@ export default class Mesh{
                 let t2 = locY.dot(p_minus_O);
                 face2d.push([t1,t2]);
             }
-            this._faces_2d.push(face2d);
-
+            this._faces_2d[index] = face2d;
         }
-        console.log(this._faces_2d);
     }
 
-    
+    layoutNet(){
+        console.log(this._dualGraph);
+        console.log(this._dualGraph_sorted);
+        console.log(this._spanningTree);
+
+        let net = [];
+
+        let root = null;
+        for(let i=0; i<this._spanningTree.length; i++){
+            let branch = this._spanningTree[i];
+            let netBranch = [];
+            if(!root) root = branch[0]; // Set root to first arbitrary face in Spanning Tree.
+            let flat_tree = [];
+
+            for(let k=0; k<branch.length; k++){
+                let face = branch[k];
+
+                if(face === root) {
+                    netBranch[0] = this._faces_2d[face].slice();
+                    // console.log("netBranch", netBranch);
+                    continue;
+                } else {
+                    let previousFace = branch[k-1] || root;
+                    // console.log("branch", branch, "face", face, "previousFace", previousFace);
+
+                    let joiningEdge = [];
+                    for(let l=0; l<this._faces[face].length; l++){
+                        let currentVert = this._faces[face][l];
+                        // Look at every vertex in the other face...
+                        for(let m=0; m<this._faces[previousFace].length; m++){
+                            let otherVert = this._faces[previousFace][m];
+                            if(currentVert == otherVert) joiningEdge.push(l);
+                        }
+                    }
+                    // Rotate and then Translate Face
+                    console.log("netBranch", netBranch);
+
+                    let origin = this._faces_2d[previousFace][joiningEdge[0]]; // First vertex of prev joining edge
+                    console.log("origin", origin);
+                    let rotation = Math.atan2(this._faces_2d[face][1], this._faces_2d[face][0]);
+                    
+                    let updated_face = this._faces_2d[face].slice();
+                    for(let l=0; l<updated_face.length; l++){
+                        let vertex = updated_face[l];
+                        // for(let m=0; m<vertex.length; m++){
+                        // vertex[0] -= origin[0];
+                        // vertex[1] -= origin[1];
+                        // let tmp_x = vertex[0];
+                        // let tmp_y = vertex[1];
+                        // vertex[0] = tmp_x*Math.cos(rotation)-tmp_y*Math.sin(rotation);
+                        // vertex[1] = tmp_x*Math.cos(rotation)+tmp_y*Math.sin(rotation);
+                        // vertex[0] += origin[0];
+                        // vertex[1] += origin[1];
+                        // updated_face.push(vertex);
+                    }
+                    console.log("updated_face", updated_face);
+                    netBranch.push(updated_face);
+                }
+
+            }
+        }
+    }
 }
