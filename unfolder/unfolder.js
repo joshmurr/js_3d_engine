@@ -21,8 +21,8 @@ torus.createFaces();
 
 
 let meshes = {
-    "Octahedron": octahedron,
     "Icosahedron": icosahedron,
+    "Octahedron": octahedron,
     "Cube": cube,
     "Irregular Octahedron": irregularOctahedron,
     "Torus": torus,
@@ -86,12 +86,16 @@ for(let mesh in meshes){
 // irregularOctahedron.sortDualGraphByAngleBetweenFaces();
 // icosahedron.sortDualGraphByAngleBetweenFaces();
 
+icosahedron.create2dCoordsFromFaces();
+icosahedron.layoutNet();
 octahedron.create2dCoordsFromFaces();
 octahedron.layoutNet();
-// cube.create2dCoordsFromFaces();
-// icosahedron.create2dCoordsFromFaces();
+cube.create2dCoordsFromFaces();
+cube.layoutNet();
+irregularOctahedron.create2dCoordsFromFaces();
+irregularOctahedron.layoutNet();
 // torus.create2dCoordsFromFaces();
-// irregularOctahedron.create2dCoordsFromFaces();
+// torus.layoutNet();
 
 function draw(){
     renderer.render();

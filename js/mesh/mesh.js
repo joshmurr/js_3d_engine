@@ -20,6 +20,7 @@ export default class Mesh{
     _flat_faces = [];
     _flat_norms = [];
     _faces_2d = [];
+    _net = [];
 
     constructor(){
         this.modelMatrix = new Mat44();
@@ -122,7 +123,6 @@ export default class Mesh{
             // for(let j=0; j<_array[i].length; j++){
             this._spanningTree[i] = _array[i];
         }
-        // console.log("Spanning tree", this._spanningTree);
     }
 
     get spanningTree(){
@@ -219,7 +219,6 @@ export default class Mesh{
             let normal_B = this._norms[this._dualGraph[i][1]];
             let dp = normal_A.dot(normal_B);
             let angle = Math.acos(dp); // Pi minus angle to get interior
-            // console.log(this._dualGraph[i][0], this._dualGraph[i][1], dp, angle);
 
             dualGraph_unordered.set(i, angle);
         }
@@ -359,7 +358,6 @@ export default class Mesh{
                 largestFace = i;
             }
         }
-        // console.log(largestFace);
         // Find the largest face ---------------------------
         // Create Spanning Tree ---------------------------
         // https://algorithms.tutorialhorizon.com/kruskals-algorithm-minimum-spanning-tree-mst-complete-java-implementation/
@@ -377,12 +375,8 @@ export default class Mesh{
 
         // Create Spanning Tree ---------------------------
         let spanningTree = [];
-        // let angleTree = [];
-        // console.log(this._angles_sorted);
-        // console.log(this._dualGraph);
         for(let i=0; i<this._dualGraph_sorted.length; i++){
             let currentPair = this._dualGraph[this._dualGraph_sorted[i]].slice();
-            // let currentAngle = this._angles_sorted[this._dualGraph_sorted[i]];
 
             // Check if currentPair[0] is already a child of another node
             let isChild = false;
@@ -393,13 +387,11 @@ export default class Mesh{
                 }
             }
             if(isChild) continue;
-            else spanningTree.push(currentPair);// angleTree.push(currentAngle);
+            else spanningTree.push(currentPair);
         }
-        // let spanningTreeCopy = spanningTree.slice();
-        // console.log("Copy", spanningTreeCopy);
         this.completeSpanningTree(spanningTree);
 
-        this.spanningTree = spanningTree;
+        this.spanningTree = spanningTree.sort();
         // Create Spanning Tree ---------------------------
     }
 
@@ -410,7 +402,6 @@ export default class Mesh{
             // let currentAngle = _angleTree[i];
             for(let j=0; j<_spanningTree.length; j++){
                 let otherNode = _spanningTree[j].slice();
-                // let otherAngle = _angleTree[j].slice();
                 // If the first element of current node is the same as the last on otherNode:
                 // [2, 1] + [3, 2] -> [3, 2, 1]
                 if(currentNode[0] == otherNode[otherNode.length-1]){
@@ -456,7 +447,6 @@ export default class Mesh{
             this._flat_faces.push(faceCOPY);
             // this._flat_norms.push(copy);
         }
-        // console.log(this._flat_faces);
         // this._flat_faces is now a copy of faces with their own points at the same face ID
     }
 
@@ -491,65 +481,142 @@ export default class Mesh{
     }
 
     layoutNet(){
-        console.log(this._dualGraph);
-        console.log(this._dualGraph_sorted);
-        console.log(this._spanningTree);
+        // console.log(this._dualGraph);
+        // console.log(this._dualGraph_sorted);
+        // console.warn(this._spanningTree);
 
-        let net = [];
-
+        let sortedTree = this._spanningTree.slice();
         let root = null;
-        for(let i=0; i<this._spanningTree.length; i++){
-            let branch = this._spanningTree[i];
+        console.warn("sortedTree", sortedTree);
+
+        for(let i=0; i<sortedTree.length; i++){
+            let branch = sortedTree[i];
             let netBranch = [];
-            if(!root) root = branch[0]; // Set root to first arbitrary face in Spanning Tree.
+            if(root === null) root = branch[i]; // Set root to first arbitrary face in Spanning Tree.
             let flat_tree = [];
 
             for(let k=0; k<branch.length; k++){
                 let face = branch[k];
+                let previousFace;
 
-                if(face === root) {
-                    netBranch[0] = this._faces_2d[face].slice();
+                if(k == 0 && face == root) {
+                    // netBranch[0] = this._faces_2d[face].slice();
+                    netBranch.push(this._faces_2d[face]);
+                    // root = null;
                     // console.log("netBranch", netBranch);
                     continue;
-                } else {
-                    let previousFace = branch[k-1] || root;
-                    // console.log("branch", branch, "face", face, "previousFace", previousFace);
+                } else if (k == 0 && face !== root) {
+                    // New branch and not root
+                    
+                    let matches = [];
+                    let match = null;
+                    for(let l=0; l<this._dualGraph.length; l++){
+                        if(this._dualGraph[l][0] == face) matches.push(this._dualGraph[l][1]);
+                        else if(this._dualGraph[l][1] == face) matches.push(this._dualGraph[l][0]);
+                    }
+                    // console.log("HERE", face, matches);
 
-                    let joiningEdge = [];
-                    for(let l=0; l<this._faces[face].length; l++){
-                        let currentVert = this._faces[face][l];
-                        // Look at every vertex in the other face...
-                        for(let m=0; m<this._faces[previousFace].length; m++){
-                            let otherVert = this._faces[previousFace][m];
-                            if(currentVert == otherVert) joiningEdge.push(l);
+                    if(matches.includes(root)) previousFace = root;
+                    if(matches.includes(sortedTree[i-1][0])) previousFace = sortedTree[i-1][0];
+                    else {
+                        // Revers back through the tree, it's like there will be a match at the end of the braches
+                        for(let l=0; l<sortedTree.length; l++){
+                            let searchBranch = sortedTree[l];
+                            for(let m=searchBranch.length-1; m>-1; m--){
+                                let searchFace = searchBranch[m];
+                                if(matches.includes(searchFace) && match === null) {
+                                    match = searchFace;
+                                    console.log(face, "matched with", match);
+                                }
+                            }
+                        }
+                        previousFace = match;
+                        if(face == 9) console.log("9 prev face:", previousFace);
+                    }
+                } else {
+                    previousFace = branch[k-1];// || root;
+                }
+                // console.log("branch", branch, "face", face, "previousFace", previousFace);
+                // console.log("root", root, "face", face, "previousFace", previousFace);
+
+                let faceJoiningEdge = [];
+                let prevJoiningEdge = [];
+                for(let l=0; l<this._faces[face].length; l++){
+                    let currentVert = this._faces[face][l];
+                    // Look at every vertex in the other face...
+                    for(let m=0; m<this._faces[previousFace].length; m++){
+                        let otherVert = this._faces[previousFace][m];
+                        if(currentVert == otherVert) {
+                            faceJoiningEdge.push(l);
+                            prevJoiningEdge.push(m);
                         }
                     }
-                    // Rotate and then Translate Face
-                    console.log("netBranch", netBranch);
-
-                    let origin = this._faces_2d[previousFace][joiningEdge[0]]; // First vertex of prev joining edge
-                    console.log("origin", origin);
-                    let rotation = Math.atan2(this._faces_2d[face][1], this._faces_2d[face][0]);
-                    
-                    let updated_face = this._faces_2d[face].slice();
-                    for(let l=0; l<updated_face.length; l++){
-                        let vertex = updated_face[l];
-                        // for(let m=0; m<vertex.length; m++){
-                        // vertex[0] -= origin[0];
-                        // vertex[1] -= origin[1];
-                        // let tmp_x = vertex[0];
-                        // let tmp_y = vertex[1];
-                        // vertex[0] = tmp_x*Math.cos(rotation)-tmp_y*Math.sin(rotation);
-                        // vertex[1] = tmp_x*Math.cos(rotation)+tmp_y*Math.sin(rotation);
-                        // vertex[0] += origin[0];
-                        // vertex[1] += origin[1];
-                        // updated_face.push(vertex);
-                    }
-                    console.log("updated_face", updated_face);
-                    netBranch.push(updated_face);
                 }
 
+                // let faceMutualVertex = 0;
+                // let prevMutualVertex = prevJoiningEdge.indexOf(faceJoiningEdge[faceMutualVertex]);
+                // if(prevMutualVertex == -1) {
+                    // prevMutualVertex = prevJoiningEdge.indexOf(faceJoiningEdge[faceMutualVertex = 1]);
+                // }
+
+                let oneeighty = false;
+
+                let face2d = this._faces_2d[face].slice();
+                let prev_face2d = netBranch[k-1] || this._faces_2d[root];
+
+                let origin = prev_face2d[prevJoiningEdge[0]];
+                let anchor = face2d[faceJoiningEdge[0]];
+
+                let dx = face2d[faceJoiningEdge[0]][0] - face2d[faceJoiningEdge[1]][0];
+                let dy = face2d[faceJoiningEdge[0]][1] - face2d[faceJoiningEdge[1]][1];
+
+                let dxP = prev_face2d[prevJoiningEdge[0]][0] - prev_face2d[prevJoiningEdge[1]][0];
+                let dyP = prev_face2d[prevJoiningEdge[0]][1] - prev_face2d[prevJoiningEdge[1]][1];
+
+                let angle1 = Math.atan2(dy, dx);
+                let angle2 = Math.atan2(dyP, dxP);
+
+                let angle = ( angle2 - angle1);
+                let degrees = (angle/Math.PI)*180;
+
+                if(((angle1 < -1.57 && angle1 > -1.58) && (angle2 > 1.57 && angle2 < 1.58)) ||
+                   ((angle2 < -1.57 && angle2 > -1.58) && (angle1 > 1.57 && angle1 < 1.58)) ||
+                   ((angle1 > 3.141 && angle1 < 3.142) && (angle2 > -0.001 && angle2 < 0.001)) ||
+                   ((angle2 > 3.141 && angle2 < 3.142) && (angle1 > -0.001 && angle1 < 0.001)) ||
+                    (angle < 0.001 && angle > -0.001 && angle !== 0) ){
+                    // 180!
+                        // angle = Math.PI;
+                    oneeighty = true;
+                }
+
+                let transformed_face_2d = [];
+                for(let l=0; l<face2d.length; l++){
+                    let vert = face2d[l];
+
+                    let tx = face2d[l][0] - anchor[0];
+                    let ty = face2d[l][1] - anchor[1];
+                    let x = 0; let y = 0;
+                    if(oneeighty) {
+                        angle = Math.PI/2;
+                        let ttx =  tx*Math.cos(angle) - ty*Math.sin(angle);
+                        let tty =  tx*Math.sin(angle) + ty*Math.cos(angle);
+                        x =  ttx*Math.cos(angle) - tty*Math.sin(angle);
+                        y =  ttx*Math.sin(angle) + tty*Math.cos(angle);
+                    } else {
+                        x =  tx*Math.cos(angle) - ty*Math.sin(angle);
+                        y =  tx*Math.sin(angle) + ty*Math.cos(angle);
+                    }
+                    x += origin[0];
+                    y += origin[1];
+
+                    transformed_face_2d.push([x,y]);
+                }
+
+                netBranch.push(transformed_face_2d);
+
             }
+            this._net.push(netBranch);
         }
+        // console.log("net", this._net);
     }
 }

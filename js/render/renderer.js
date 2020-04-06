@@ -542,27 +542,46 @@ export default class Renderer{
         }
         // Spanning Tree ----------------**--
 
-        for(let i=0; i<mesh._faces_2d.length; i++){
+        this.ctx.fillStyle = "rgba(255, 0, 0, 0.2)";
+        this.ctx.fillRect(250, 50, 800, 800);
+        for(let i=0; i<mesh._net.length; i++){
             let scale = 100;
-            let face = mesh._faces_2d[i];
-            this.ctx.beginPath();
-            this.ctx.strokeStyle = "black";
-            this.ctx.lineWidth = 2;
-            for(let j=0; j<face.length; j++){
-                let screen = face[j];
-                xScreen = screen[0]*scale;
-                yScreen = screen[1]*scale;
-                xScreen += 300;
-                yScreen += 100;
-                // xScreen += i*120;
-                yScreen += i*30;
-                // console.log(xScreen, yScreen);
-                this.ctx.lineTo(xScreen, yScreen);
+            let branch = mesh._net[i];
+            for(let j=0; j<branch.length; j++){
+                let face = branch[j];
+                this.ctx.beginPath();
+                // this.ctx.strokeStyle = "rgb("+Math.floor((j/branch.length)*255)+","+Math.floor((i/mesh._net.length)*255)+",0)";
+                this.ctx.lineWidth = 2;
+                let xSum = 0;
+                let ySum = 0;
+                for(let k=0; k<face.length; k++){
+                    let screen = face[k];
+
+                    let x = screen[0];
+                    let y = screen[1];
+
+                    xRange = (x + 1)*0.5;
+                    yRange = 1-((y + 1)*0.5);
+                    xScreen = xRange * 128;
+                    yScreen = yRange * 128;
+
+                    xSum += xScreen;
+                    ySum += yScreen;
+
+                    xScreen += 700;
+                    yScreen += 400;
+
+                    // xScreen += 300;
+                    // yScreen += 100;
+                    // xScreen += i*120;
+                    // yScreen += i*30;
+                    this.ctx.lineTo(xScreen, yScreen);
+                }
+                this.ctx.strokeStyle = "rgb(0,"+Math.floor((i/mesh._net.length)*255)+",0)";
+                this.ctx.strokeText(mesh._spanningTree[i][j], (xSum/face.length) + 700 + j*12, (ySum/face.length) + 400 + i*12);
+                this.ctx.closePath();
+                this.ctx.stroke();
             }
-            this.ctx.closePath();
-            this.ctx.stroke();
-
-
         }
 
 
