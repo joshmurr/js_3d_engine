@@ -520,7 +520,7 @@ export default class Mesh{
                     if(matches.includes(sortedTree[i-1][0])) previousFace = sortedTree[i-1][0];
                     else {
                         // Revers back through the tree, it's like there will be a match at the end of the braches
-                        for(let l=0; l<sortedTree.length; l++){
+                        for(let l=sortedTree.length-1; l>-1; l--){
                             let searchBranch = sortedTree[l];
                             for(let m=searchBranch.length-1; m>-1; m--){
                                 let searchFace = searchBranch[m];
