@@ -241,6 +241,7 @@ export default class Mesh{
     }
 
 
+
     computeFaceNormals(){
         let norms = [];
         for(let i=0; i<this.faces.length; i++){
@@ -278,9 +279,9 @@ export default class Mesh{
 
         this.modelMatrix.setIdentity();
         this.modelMatrix.multiplyMat(transMat);
-        this.modelMatrix.multiplyMat(rotXMat);
-        this.modelMatrix.multiplyMat(rotYMat);
         this.modelMatrix.multiplyMat(rotZMat);
+        this.modelMatrix.multiplyMat(rotYMat);
+        this.modelMatrix.multiplyMat(rotXMat);
         this.modelMatrix.multiplyMat(scaleMat);
 
         return this.modelMatrix;
@@ -317,11 +318,13 @@ export default class Mesh{
     }
 
 
+
     createSpanningTree(){
         this._spanningTree = [];
 
         // this.sortDualGraphByDistanceBetweenCentroids();
         this.sortDualGraphByAngleBetweenFaces();
+        // this.sortDualGraphByDistanceToRoot();
 
         let face_areas = [];
         // The largest face will be the root of the Spanning Tree.
@@ -352,14 +355,14 @@ export default class Mesh{
         }
         // Calculate Face Areas ----------------------------
         // Find the largest face ---------------------------
-        let largestArea = 0;
-        let largestFace = 0;
-        for(let i=0; i<face_areas.length; i++){
-            if(face_areas[i] > largestArea){
-                largestArea = face_areas[i];
-                largestFace = i;
-            }
-        }
+        // let largestArea = 0;
+        // let largestFace = 0;
+        // for(let i=0; i<face_areas.length; i++){
+            // if(face_areas[i] > largestArea){
+                // largestArea = face_areas[i];
+                // largestFace = i;
+            // }
+        // }
         // Find the largest face ---------------------------
         // Create Spanning Tree ---------------------------
         // https://algorithms.tutorialhorizon.com/kruskals-algorithm-minimum-spanning-tree-mst-complete-java-implementation/
@@ -401,7 +404,6 @@ export default class Mesh{
     completeSpanningTree(_spanningTree){
         for(let i=0; i<_spanningTree.length; i++){
             let currentNode = _spanningTree[i].slice();
-            // let currentAngle = _angleTree[i];
             for(let j=0; j<_spanningTree.length; j++){
                 let otherNode = _spanningTree[j].slice();
                 // If the first element of current node is the same as the last on otherNode:
@@ -415,42 +417,6 @@ export default class Mesh{
         }
     }
 
-    flatten(){
-        let xz_normal = new Vec4(0, 1, 0, 1);
-        let moveToGroundMatrix = new Mat44();
-        let rotateToGroundMatrix = new Mat44();
-        for(let i=0; i<this._indices_sorted.length; i++){
-            let index = this._indices_sorted[i];
-            let face = this._faces[index];
-            let normal = this._norms[index];
-            let centroid = this._centroids[index];
-
-            // Check angle with ground plane
-            let dp = normal.dot(xz_normal);
-            let angle = Math.acos(dp); // Pi minus angle to get interior
-
-            let centroidToGround = new Vec3(0, -centroid.y, 0);
-            let axis = new Vec3(centroid.x, 0, centroid.z);
-            axis.normalize();
-            moveToGroundMatrix.setTranslation(centroidToGround);
-            rotateToGroundMatrix.setAxisAngle(centroidToGround, axis, angle);
-
-            let faceCOPY = [];
-            for(let j=0; j<face.length; j++){
-                let v = moveToGroundMatrix.getMultiplyVec(this._verts[face[j]]);
-                let n = moveToGroundMatrix.getMultiplyVec(normal);
-                v = rotateToGroundMatrix.getMultiplyVec(v);
-                n = rotateToGroundMatrix.getMultiplyVec(n);
-
-
-                // v.add(normal);
-                faceCOPY.push(v);
-            }
-            this._flat_faces.push(faceCOPY);
-            // this._flat_norms.push(copy);
-        }
-        // this._flat_faces is now a copy of faces with their own points at the same face ID
-    }
 
     create2dCoordsFromFaces(){
         for(let i=0; i<this._indices_sorted.length; i++){
@@ -490,7 +456,7 @@ export default class Mesh{
         let sortedTree = this._spanningTree.slice();
         let root = null;
         let face2d, prev_face2d;
-        console.warn("sortedTree", sortedTree);
+        // console.warn("sortedTree", sortedTree);
 
         // for(let i=0; i<sortedTree.length; i++){
         let i=0;
@@ -508,6 +474,7 @@ export default class Mesh{
                     // netBranch[0] = this._faces_2d[face].slice();
                     netBranch.push(this._faces_2d[face].slice());
                     this._transformed_flat_faces[face] = this._faces_2d[face].slice();
+                    // console.log("Root", root);
                     continue;
                 } else if (k == 0 && face !== root) {
                     // New branch and not root
@@ -546,7 +513,7 @@ export default class Mesh{
                                     let searchFace = searchBranch[m];
                                     if(matches.includes(searchFace) && this._transformed_flat_faces[searchFace]) {
                                         match = searchFace;
-                                        console.log(face, "matched with", match);
+                                        // console.log(face, "matched with", match);
                                         break;
                                     } 
                                 }
@@ -564,7 +531,7 @@ export default class Mesh{
                     previousFace = branch[k-1];// || root;
                 }
 
-                console.log("face", face, "Previous face", previousFace);
+                // console.log("face", face, "Previous face", previousFace);
 
 
 
@@ -572,14 +539,10 @@ export default class Mesh{
                 else face2d = this._transformed_flat_faces[face];
 
                 // if(this._transformed_flat_faces[previousFace] == null) prev_face2d = this._faces_2d[previousFace];//.slice();
-                if(previousFace == root) prev_face2d = this._transformed_flat_faces[root];
-                else prev_face2d = this._transformed_flat_faces[previousFace];
+                // if(previousFace == root) prev_face2d = this._transformed_flat_faces[root];
+                prev_face2d = this._transformed_flat_faces[previousFace];
 
                 if(prev_face2d == undefined) {
-                    // console.error("Continuing on: face", face, "prevFace", previousFace);
-                    // let tmpBranch = sortedTree.slice(i, 1);
-                    // console.log("tmpBranch", tmpBranch);
-                    // sortedTree.push(tmpBranch);
                     continue;
                 }
 
@@ -616,8 +579,8 @@ export default class Mesh{
                 if(((angle1 < -1.57 && angle1 > -1.58) && (angle2 > 1.57 && angle2 < 1.58)) ||
                    ((angle2 < -1.57 && angle2 > -1.58) && (angle1 > 1.57 && angle1 < 1.58)) ||
                    ((angle1 > 3.141 && angle1 < 3.142) && (angle2 > -0.001 && angle2 < 0.001)) ||
-                   ((angle2 > 3.141 && angle2 < 3.142) && (angle1 > -0.001 && angle1 < 0.001)) ||
-                    (angle < 0.001 && angle > -0.001 && angle !== 0) ){
+                   ((angle2 > 3.141 && angle2 < 3.142) && (angle1 > -0.001 && angle1 < 0.001)) //||
+                   /* (angle < 0.001 && angle > -0.001 && angle !== 0)*/ ){
                     // 180!
                         // angle = Math.PI;
                     oneeighty = true;
@@ -664,7 +627,98 @@ export default class Mesh{
                 i++;
             }
         }
-        console.log("net", this._net);
-        console.log(this._transformed_flat_faces);
+        // console.log("net", this._net);
+        // console.log(this._transformed_flat_faces);
+    }
+
+    // *** UNUSED *** ----------------------------------------------------------
+    // *** UNUSED *** ----------------------------------------------------------
+    // *** UNUSED *** ----------------------------------------------------------
+    flatten(){
+        let xz_normal = new Vec4(0, 1, 0, 1);
+        let moveToGroundMatrix = new Mat44();
+        let rotateToGroundMatrix = new Mat44();
+        for(let i=0; i<this._indices_sorted.length; i++){
+            let index = this._indices_sorted[i];
+            let face = this._faces[index];
+            let normal = this._norms[index];
+            let centroid = this._centroids[index];
+
+            // Check angle with ground plane
+            let dp = normal.dot(xz_normal);
+            let angle = Math.acos(dp); // Pi minus angle to get interior
+
+            let centroidToGround = new Vec3(0, -centroid.y, 0);
+            let axis = new Vec3(centroid.x, 0, centroid.z);
+            axis.normalize();
+            moveToGroundMatrix.setTranslation(centroidToGround);
+            rotateToGroundMatrix.setAxisAngle(centroidToGround, axis, angle);
+
+            let faceCOPY = [];
+            for(let j=0; j<face.length; j++){
+                let v = moveToGroundMatrix.getMultiplyVec(this._verts[face[j]]);
+                let n = moveToGroundMatrix.getMultiplyVec(normal);
+                v = rotateToGroundMatrix.getMultiplyVec(v);
+                n = rotateToGroundMatrix.getMultiplyVec(n);
+
+
+                // v.add(normal);
+                faceCOPY.push(v);
+            }
+            this._flat_faces.push(faceCOPY);
+            // this._flat_norms.push(copy);
+        }
+        // this._flat_faces is now a copy of faces with their own points at the same face ID
+    }
+    sortDualGraphByDistanceToRoot(){
+        let dualGraph_unordered = new Map();
+
+        let face_areas = [];
+        for(let i=0; i<this._indices_sorted.length; i++){
+            // unreached[i] = this._indices_sorted[i]; // Populate unreached array
+            let face = this._faces[this._indices_sorted[i]];
+            let points = [];
+            for(let j=0; j<face.length; j++){
+                points.push(this._verts[face[j]]);
+            }
+            face_areas[this._indices_sorted[i]] = areaForSorting(points);
+        }
+        let largestArea = 0;
+        let largestFaceIndex = 0;
+        for(let i=0; i<face_areas.length; i++){
+            if(face_areas[i] > largestArea){
+                largestArea = face_areas[i];
+                largestFaceIndex = i;
+            }
+        }
+
+        let largestFace_centroid = this._centroids[largestFaceIndex];
+
+        for(let i=0; i<this._dualGraph.length; i++){
+            // Distance between two centroids in dual graph
+            let centroid_A = this._centroids[this._dualGraph[i][0]];
+            let centroid_B = this._centroids[this._dualGraph[i][1]];
+
+            centroid_A.add(centroid_B);
+            centroid_A.multiply(0.5);
+
+            let dist = distance(largestFace_centroid, centroid_A);
+
+            dualGraph_unordered.set(i, dist);
+        }
+        let sorted = [];
+        let sorted_vals = [];
+        function sort_faces_into_array(value, key, map){
+            sorted.push(key);
+            sorted_vals.push(value);
+        }
+        // Swapping a and b gives different results..
+        let dualGraph_ordered = new Map([...dualGraph_unordered.entries()].sort((a,b) => a[1] - b[1]));
+        dualGraph_ordered.forEach(sort_faces_into_array);
+        this.sorted_dualGraph = sorted;
+        this.sorted_angles = sorted_vals;
+        dualGraph_ordered = null;
+        dualGraph_unordered = null;
+        sorted = [];
     }
 }

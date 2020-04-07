@@ -543,10 +543,11 @@ export default class Renderer{
         // Spanning Tree ----------------**--
 
         this.ctx.fillStyle = "rgba(255, 0, 0, 0.2)";
-        this.ctx.fillRect(250, 50, 800, 800);
+        // this.ctx.fillRect(250, 50, 800, 800);
         for(let i=0; i<mesh._transformed_flat_faces.length; i++){
-            let scale = 256;
-            let offset = 400;
+            let scale = 128;
+            let xOff = 500;
+            let yOff = 300;
             // let branch = mesh._net[i];
             // if(branch == undefined) continue;
             // for(let j=0; j<branch.length; j++){
@@ -570,8 +571,8 @@ export default class Renderer{
                     xSum += xScreen;
                     ySum += yScreen;
 
-                    xScreen += 400;
-                    yScreen += 400;
+                    xScreen += xOff;
+                    yScreen += yOff;
 
                     // xScreen += 300;
                     // yScreen += 100;
@@ -580,9 +581,10 @@ export default class Renderer{
                     this.ctx.lineTo(xScreen, yScreen);
                 }
                 this.ctx.strokeStyle = "rgb(0,"+Math.floor((i/mesh._transformed_flat_faces.length)*255)+",0)";
-                // this.ctx.strokeText(mesh._spanningTree[i][j], (xSum/face.length) + offset-12 + j*4, (ySum/face.length) + offset-12 + i*4);
                 this.ctx.closePath();
                 this.ctx.stroke();
+            this.ctx.fill();
+                this.ctx.strokeText(i, (xSum/face.length) + xOff, (ySum/face.length) + yOff);
             // }
         }
 

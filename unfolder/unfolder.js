@@ -8,14 +8,15 @@ import Scene from '../js/scene/scene.js';
 
 import { Icosahedron, Octahedron, Cube } from '../js/mesh/platonicSolids.js';
 import { Torus, KleinBottle } from '../js/mesh/parametricSolid.js';
-import { IrregularOctahedron } from '../js/mesh/miscSolid.js';
+import { IrregularOctahedron, IrregularIcosahedron } from '../js/mesh/miscSolid.js';
 
 let icosahedron = new Icosahedron();
 let octahedron = new Octahedron();
 let cube = new Cube();
 let irregularOctahedron = new IrregularOctahedron();
-let torus = new Torus(8,8, 0, Math.PI*2, 0, Math.PI*2, 1.2, 0.4);
-let klein = new KleinBottle(8,8, 0, Math.PI*2, 0, Math.PI*2);
+let irregularIcosahedron = new IrregularIcosahedron();
+let torus = new Torus(6,6, 0, Math.PI*2, 0, Math.PI*2, 1.2, 0.4);
+let klein = new KleinBottle(4,4, 0, Math.PI*2, 0, Math.PI*2);
 
 torus.createVerts();
 torus.createFaces();
@@ -24,6 +25,7 @@ klein.createFaces();
 
 
 let meshes = {
+    "Irregular Icosahedron": irregularIcosahedron,
     "Icosahedron": icosahedron,
     "Octahedron": octahedron,
     "Cube": cube,
@@ -91,17 +93,21 @@ for(let mesh in meshes){
 // icosahedron.sortDualGraphByAngleBetweenFaces();
 
 console.error("Icosahedron");
-icosahedron.create2dCoordsFromFaces();
-icosahedron.layoutNet();
-console.error("Octahedron");
-octahedron.create2dCoordsFromFaces();
-octahedron.layoutNet();
-console.error("Cube");
-cube.create2dCoordsFromFaces();
-cube.layoutNet();
-console.error("IrregularOctahedron");
-irregularOctahedron.create2dCoordsFromFaces();
-irregularOctahedron.layoutNet();
+// icosahedron.create2dCoordsFromFaces();
+// icosahedron.layoutNet();
+
+irregularIcosahedron.create2dCoordsFromFaces();
+irregularIcosahedron.layoutNet();
+
+// console.error("Octahedron");
+// octahedron.create2dCoordsFromFaces();
+// octahedron.layoutNet();
+// console.error("Cube");
+// cube.create2dCoordsFromFaces();
+// cube.layoutNet();
+// console.error("IrregularOctahedron");
+// irregularOctahedron.create2dCoordsFromFaces();
+// irregularOctahedron.layoutNet();
 // torus.create2dCoordsFromFaces();
 // torus.layoutNet();
 // klein.create2dCoordsFromFaces();
