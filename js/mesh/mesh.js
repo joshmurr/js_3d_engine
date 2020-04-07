@@ -22,6 +22,8 @@ export default class Mesh{
     _faces_2d = [];
     _net = [];
 
+    _transformed_flat_faces = [];
+
     constructor(){
         this.modelMatrix = new Mat44();
         this.modelMatrix.setIdentity();
@@ -487,9 +489,12 @@ export default class Mesh{
 
         let sortedTree = this._spanningTree.slice();
         let root = null;
+        let face2d, prev_face2d;
         console.warn("sortedTree", sortedTree);
 
-        for(let i=0; i<sortedTree.length; i++){
+        // for(let i=0; i<sortedTree.length; i++){
+        let i=0;
+        while(/*this._net.length !== */sortedTree.length > 0){
             let branch = sortedTree[i];
             let netBranch = [];
             if(root === null) root = branch[i]; // Set root to first arbitrary face in Spanning Tree.
@@ -501,9 +506,8 @@ export default class Mesh{
 
                 if(k == 0 && face == root) {
                     // netBranch[0] = this._faces_2d[face].slice();
-                    netBranch.push(this._faces_2d[face]);
-                    // root = null;
-                    // console.log("netBranch", netBranch);
+                    netBranch.push(this._faces_2d[face].slice());
+                    this._transformed_flat_faces[face] = this._faces_2d[face].slice();
                     continue;
                 } else if (k == 0 && face !== root) {
                     // New branch and not root
@@ -514,30 +518,70 @@ export default class Mesh{
                         if(this._dualGraph[l][0] == face) matches.push(this._dualGraph[l][1]);
                         else if(this._dualGraph[l][1] == face) matches.push(this._dualGraph[l][0]);
                     }
-                    // console.log("HERE", face, matches);
 
-                    if(matches.includes(root)) previousFace = root;
-                    if(matches.includes(sortedTree[i-1][0])) previousFace = sortedTree[i-1][0];
-                    else {
+                    // for(let l=0; l<matches.length; l++){
+                        // for(let m=0; m<sortedTree.length; m++){
+                            // if(sortedTree[m].includes(matches[l])){
+                                // matches.splice(m,1);
+                                // break;
+                            // }
+                        // }
+                    // }
+                    // console.log(face, "matches", matches);
+
+                    if(matches.includes(root)) {
+                        previousFace = root;
+                        // continue;
+                    // }
+                    // if(matches.includes(sortedTree[i-1][0])) {
+                        // previousFace = sortedTree[i-1][0];
+                        // continue;
+                    } else {
                         // Revers back through the tree, it's like there will be a match at the end of the braches
-                        for(let l=sortedTree.length-1; l>-1; l--){
-                            let searchBranch = sortedTree[l];
-                            for(let m=searchBranch.length-1; m>-1; m--){
-                                let searchFace = searchBranch[m];
-                                if(matches.includes(searchFace) && match === null) {
-                                    match = searchFace;
-                                    console.log(face, "matched with", match);
+                        // for(let l=sortedTree.length-1; l>-1; l--){
+                        while(previousFace === undefined){
+                            for(let l=0; l<this._spanningTree.length; l++){
+                                let searchBranch = this._spanningTree[l];
+                                for(let m=searchBranch.length-1; m>-1; m--){
+                                    let searchFace = searchBranch[m];
+                                    if(matches.includes(searchFace) && this._transformed_flat_faces[searchFace]) {
+                                        match = searchFace;
+                                        console.log(face, "matched with", match);
+                                        break;
+                                    } 
                                 }
                             }
+                            if(match == null){
+                                // Has no matches in _transformed_flat_faces
+                                previousFace = null;
+                            } else {
+                                previousFace = match;
+                            }
                         }
-                        previousFace = match;
-                        if(face == 9) console.log("9 prev face:", previousFace);
+                        // if(face == 9) console.log("9 prev face:", previousFace);
                     }
                 } else {
                     previousFace = branch[k-1];// || root;
                 }
-                // console.log("branch", branch, "face", face, "previousFace", previousFace);
-                // console.log("root", root, "face", face, "previousFace", previousFace);
+
+                console.log("face", face, "Previous face", previousFace);
+
+
+
+                if(this._transformed_flat_faces[face] == null) face2d = this._faces_2d[face];//.slice();
+                else face2d = this._transformed_flat_faces[face];
+
+                // if(this._transformed_flat_faces[previousFace] == null) prev_face2d = this._faces_2d[previousFace];//.slice();
+                if(previousFace == root) prev_face2d = this._transformed_flat_faces[root];
+                else prev_face2d = this._transformed_flat_faces[previousFace];
+
+                if(prev_face2d == undefined) {
+                    // console.error("Continuing on: face", face, "prevFace", previousFace);
+                    // let tmpBranch = sortedTree.slice(i, 1);
+                    // console.log("tmpBranch", tmpBranch);
+                    // sortedTree.push(tmpBranch);
+                    continue;
+                }
 
                 let faceJoiningEdge = [];
                 let prevJoiningEdge = [];
@@ -552,17 +596,7 @@ export default class Mesh{
                         }
                     }
                 }
-
-                // let faceMutualVertex = 0;
-                // let prevMutualVertex = prevJoiningEdge.indexOf(faceJoiningEdge[faceMutualVertex]);
-                // if(prevMutualVertex == -1) {
-                    // prevMutualVertex = prevJoiningEdge.indexOf(faceJoiningEdge[faceMutualVertex = 1]);
-                // }
-
                 let oneeighty = false;
-
-                let face2d = this._faces_2d[face].slice();
-                let prev_face2d = netBranch[k-1] || this._faces_2d[root];
 
                 let origin = prev_face2d[prevJoiningEdge[0]];
                 let anchor = face2d[faceJoiningEdge[0]];
@@ -612,11 +646,25 @@ export default class Mesh{
                     transformed_face_2d.push([x,y]);
                 }
 
-                netBranch.push(transformed_face_2d);
-
+                // netBranch.push(transformed_face_2d);
+                netBranch[k] = transformed_face_2d;
+                this._transformed_flat_faces[face] = transformed_face_2d;
             }
-            this._net.push(netBranch);
+            // this._net.push(netBranch);
+            if(netBranch.length == branch.length) {
+                this._net[i] = netBranch;
+                sortedTree.splice(i, 1);
+                // console.log("i", i, "SLICED", sl);
+                i = 0;
+            } else if(netBranch.length !== branch.length) {
+                let tmp = sortedTree.splice(i, 1);
+                sortedTree.push(...tmp);
+                i = 0;
+            } else {
+                i++;
+            }
         }
-        // console.log("net", this._net);
+        console.log("net", this._net);
+        console.log(this._transformed_flat_faces);
     }
 }

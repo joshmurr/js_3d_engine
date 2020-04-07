@@ -544,11 +544,13 @@ export default class Renderer{
 
         this.ctx.fillStyle = "rgba(255, 0, 0, 0.2)";
         this.ctx.fillRect(250, 50, 800, 800);
-        for(let i=0; i<mesh._net.length; i++){
-            let scale = 100;
-            let branch = mesh._net[i];
-            for(let j=0; j<branch.length; j++){
-                let face = branch[j];
+        for(let i=0; i<mesh._transformed_flat_faces.length; i++){
+            let scale = 256;
+            let offset = 400;
+            // let branch = mesh._net[i];
+            // if(branch == undefined) continue;
+            // for(let j=0; j<branch.length; j++){
+                let face = mesh._transformed_flat_faces[i];
                 this.ctx.beginPath();
                 // this.ctx.strokeStyle = "rgb("+Math.floor((j/branch.length)*255)+","+Math.floor((i/mesh._net.length)*255)+",0)";
                 this.ctx.lineWidth = 2;
@@ -562,13 +564,13 @@ export default class Renderer{
 
                     xRange = (x + 1)*0.5;
                     yRange = 1-((y + 1)*0.5);
-                    xScreen = xRange * 128;
-                    yScreen = yRange * 128;
+                    xScreen = xRange * scale;
+                    yScreen = yRange * scale;
 
                     xSum += xScreen;
                     ySum += yScreen;
 
-                    xScreen += 700;
+                    xScreen += 400;
                     yScreen += 400;
 
                     // xScreen += 300;
@@ -577,11 +579,11 @@ export default class Renderer{
                     // yScreen += i*30;
                     this.ctx.lineTo(xScreen, yScreen);
                 }
-                this.ctx.strokeStyle = "rgb(0,"+Math.floor((i/mesh._net.length)*255)+",0)";
-                this.ctx.strokeText(mesh._spanningTree[i][j], (xSum/face.length) + 700 + j*12, (ySum/face.length) + 400 + i*12);
+                this.ctx.strokeStyle = "rgb(0,"+Math.floor((i/mesh._transformed_flat_faces.length)*255)+",0)";
+                // this.ctx.strokeText(mesh._spanningTree[i][j], (xSum/face.length) + offset-12 + j*4, (ySum/face.length) + offset-12 + i*4);
                 this.ctx.closePath();
                 this.ctx.stroke();
-            }
+            // }
         }
 
 

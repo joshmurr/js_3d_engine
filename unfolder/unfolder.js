@@ -90,18 +90,22 @@ for(let mesh in meshes){
 // irregularOctahedron.sortDualGraphByAngleBetweenFaces();
 // icosahedron.sortDualGraphByAngleBetweenFaces();
 
+console.error("Icosahedron");
 icosahedron.create2dCoordsFromFaces();
 icosahedron.layoutNet();
+console.error("Octahedron");
 octahedron.create2dCoordsFromFaces();
 octahedron.layoutNet();
+console.error("Cube");
 cube.create2dCoordsFromFaces();
 cube.layoutNet();
+console.error("IrregularOctahedron");
 irregularOctahedron.create2dCoordsFromFaces();
 irregularOctahedron.layoutNet();
-torus.create2dCoordsFromFaces();
-torus.layoutNet();
-klein.create2dCoordsFromFaces();
-klein.layoutNet();
+// torus.create2dCoordsFromFaces();
+// torus.layoutNet();
+// klein.create2dCoordsFromFaces();
+// klein.layoutNet();
 
 function draw(){
     renderer.render();
