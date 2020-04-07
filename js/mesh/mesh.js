@@ -353,15 +353,31 @@ export default class Mesh{
                 this._dualGraph[i][1] = temp_A;
             }
         }
+        // Reverse BACK through the DualGraph to make sure there is at least one
+        // occurance of each node.
+        for(let i=this._dualGraph_sorted.length-1; i>-1; i--){
+            let temp_A = this._dualGraph[i][0];
+            let temp_B = this._dualGraph[i][1];
+            let a_in_b = false;
+            let b_in_a = false;
+            for(let j=0; j<this._dualGraph_sorted.length; j++){
+                if(this._dualGraph[j][1] == temp_A) a_in_b = true;
+                if(this._dualGraph[j][0] == temp_B) b_in_a = true;
+            }
+            if(!a_in_b && !b_in_a){
+                this._dualGraph[i][0] = temp_B;
+                this._dualGraph[i][1] = temp_A;
+            }
+        }
         // Calculate Face Areas ----------------------------
         // Find the largest face ---------------------------
         // let largestArea = 0;
         // let largestFace = 0;
         // for(let i=0; i<face_areas.length; i++){
-            // if(face_areas[i] > largestArea){
-                // largestArea = face_areas[i];
-                // largestFace = i;
-            // }
+        // if(face_areas[i] > largestArea){
+        // largestArea = face_areas[i];
+        // largestFace = i;
+        // }
         // }
         // Find the largest face ---------------------------
         // Create Spanning Tree ---------------------------
@@ -384,17 +400,21 @@ export default class Mesh{
             let currentPair = this._dualGraph[this._dualGraph_sorted[i]].slice();
 
             // Check if currentPair[0] is already a child of another node
-            let isChild = false;
-            for(let i=0; i<spanningTree.length; i++){
-                if(/*spanningTree[i][1]==currentPair[0] ||*/ spanningTree[i][1]==currentPair[1]) {
-                    isChild = true;
-                    break;
-                }
+            let isParent = false;
+            let isChild  = false;
+            for(let j=0; j<spanningTree.length; j++){
+                // if([>spanningTree[j][0]==currentPair[1] ||<] spanningTree[j][1]==currentPair[1]) {
+                    // isChild = true;
+                    // break;
+                // }
+                // if(currentPair[0] == spanningTree[j][0]) isParent = true;
+                if(currentPair[1] == spanningTree[j][1]) isChild  = true;
             }
             if(isChild) continue;
             else spanningTree.push(currentPair);
         }
         this.completeSpanningTree(spanningTree);
+        console.log(spanningTree);
 
         this.spanningTree = spanningTree.sort();
         // Create Spanning Tree ---------------------------
@@ -460,11 +480,17 @@ export default class Mesh{
 
         // for(let i=0; i<sortedTree.length; i++){
         let i=0;
+        let reverseCounter=0;
         while(/*this._net.length !== */sortedTree.length > 0){
             let branch = sortedTree[i];
             let netBranch = [];
             if(root === null) root = branch[i]; // Set root to first arbitrary face in Spanning Tree.
             let flat_tree = [];
+
+            if(reverseCounter > sortedTree.length) {
+                branch.reverse();
+                reverseCounter = 0;
+            }
 
             for(let k=0; k<branch.length; k++){
                 let face = branch[k];
@@ -478,7 +504,7 @@ export default class Mesh{
                     continue;
                 } else if (k == 0 && face !== root) {
                     // New branch and not root
-                    
+
                     let matches = [];
                     let match = null;
                     for(let l=0; l<this._dualGraph.length; l++){
@@ -487,20 +513,20 @@ export default class Mesh{
                     }
 
                     // for(let l=0; l<matches.length; l++){
-                        // for(let m=0; m<sortedTree.length; m++){
-                            // if(sortedTree[m].includes(matches[l])){
-                                // matches.splice(m,1);
-                                // break;
-                            // }
-                        // }
+                    // for(let m=0; m<sortedTree.length; m++){
+                    // if(sortedTree[m].includes(matches[l])){
+                    // matches.splice(m,1);
+                    // break;
+                    // }
+                    // }
                     // }
                     // console.log(face, "matches", matches);
 
                     if(matches.includes(root)) {
                         previousFace = root;
                         // continue;
-                    // }
-                    // if(matches.includes(sortedTree[i-1][0])) {
+                        // }
+                        // if(matches.includes(sortedTree[i-1][0])) {
                         // previousFace = sortedTree[i-1][0];
                         // continue;
                     } else {
@@ -515,7 +541,7 @@ export default class Mesh{
                                         match = searchFace;
                                         // console.log(face, "matched with", match);
                                         break;
-                                    } 
+                                    }
                                 }
                             }
                             if(match == null){
@@ -577,12 +603,12 @@ export default class Mesh{
                 let degrees = (angle/Math.PI)*180;
 
                 if(((angle1 < -1.57 && angle1 > -1.58) && (angle2 > 1.57 && angle2 < 1.58)) ||
-                   ((angle2 < -1.57 && angle2 > -1.58) && (angle1 > 1.57 && angle1 < 1.58)) ||
-                   ((angle1 > 3.141 && angle1 < 3.142) && (angle2 > -0.001 && angle2 < 0.001)) ||
-                   ((angle2 > 3.141 && angle2 < 3.142) && (angle1 > -0.001 && angle1 < 0.001)) //||
-                   /* (angle < 0.001 && angle > -0.001 && angle !== 0)*/ ){
+                    ((angle2 < -1.57 && angle2 > -1.58) && (angle1 > 1.57 && angle1 < 1.58)) ||
+                    ((angle1 > 3.141 && angle1 < 3.142) && (angle2 > -0.001 && angle2 < 0.001)) ||
+                    ((angle2 > 3.141 && angle2 < 3.142) && (angle1 > -0.001 && angle1 < 0.001)) //||
+                /* (angle < 0.001 && angle > -0.001 && angle !== 0)*/ ){
                     // 180!
-                        // angle = Math.PI;
+                    // angle = Math.PI;
                     oneeighty = true;
                 }
 
@@ -622,6 +648,7 @@ export default class Mesh{
             } else if(netBranch.length !== branch.length) {
                 let tmp = sortedTree.splice(i, 1);
                 sortedTree.push(...tmp);
+                reverseCounter++;
                 i = 0;
             } else {
                 i++;
@@ -631,9 +658,10 @@ export default class Mesh{
         // console.log(this._transformed_flat_faces);
     }
 
+    // -------------------------------------------------------------------------
     // *** UNUSED *** ----------------------------------------------------------
-    // *** UNUSED *** ----------------------------------------------------------
-    // *** UNUSED *** ----------------------------------------------------------
+    // -------------------------------------------------------------------------
+    /*
     flatten(){
         let xz_normal = new Vec4(0, 1, 0, 1);
         let moveToGroundMatrix = new Mat44();
@@ -721,4 +749,5 @@ export default class Mesh{
         dualGraph_unordered = null;
         sorted = [];
     }
+    */
 }
