@@ -5,7 +5,6 @@ export default class Renderer{
     ctx = null;
     w = 0;
     h = 0;
-    counter = 0;
     guiValues = {};
     guiValuesRESET = {};
     _projectionMat = null;
@@ -14,6 +13,8 @@ export default class Renderer{
     _faceColourArray = null;
     _wireframePoints = null;
     _transformedVerts = [];
+    _minX = 0;
+    _minY = 0;
     constructor(scene, _width, _height){
         this.scene = scene;
         this.findGUIElements(scene.idList);
@@ -361,6 +362,7 @@ export default class Renderer{
             // Wireframe --------------------**--
 
 
+            // Calculate centroid position for all the following calculations:
             let centroid = this._VP.getMultiplyVec(mesh.centroids[sorted_indices[i]]);
             centroid.NDC();
             xRange = (centroid.x + 1)*0.5;
@@ -368,8 +370,9 @@ export default class Renderer{
             zRange = (centroid.z + 1)*0.5;
             xScreen = xRange * this.width;
             yScreen = yRange * this.height;
+
             // Centroid Numbers -------------**--
-            if(this.guiValues["numbers"]%2!==0){
+            if(this.guiValues["faceid"]%2!==0){
                 // Only multiply by the ViewProjection matrix as the centroid already to the model
                 // matrix manipulation applied.
                 this.ctx.fillStyle="rgb("+Math.floor(xRange*128)+127+","+Math.floor(yRange*128)+127+","+Math.floor(zRange*128)+127+")";
@@ -377,8 +380,9 @@ export default class Renderer{
                 this.ctx.fillText(sorted_indices[i], xScreen, yScreen);
             }
             // Centroid Numbers -------------**--
+
             // Face Normal Lines ------------**--
-            if(this.guiValues["facenormallines"]%2!==0){
+            if(this.guiValues["facenormallines"] && this.guiValues["facenormallines"]%2!==0){
                 // Only multiply by the ViewProjection matrix as the centroid already to the model
                 // matrix manipulation applied.
                 let normCoord = transformedNormal.getMultiply(0.1);
@@ -394,11 +398,6 @@ export default class Renderer{
                 this.ctx.stroke();
             }
             // Face Normal Lines ------------**--
-            if(this.guiValues["newcam"]%2!==0){
-                // let lookAt = (new Vec3(0, 0, 30));
-                // let cam = mesh.norms[0].getMultiply(2);
-                // this._viewMat = this.createViewMatrix(this.scene.camera, lookAt, new Vec3(0, 1, 0));
-            }
         }
         // VERT-BY-VERT RENDERING ------------------------------------*---
         // Points -----------------------*---
@@ -423,54 +422,9 @@ export default class Renderer{
                 this.ctx.fill();
             }
         }
-        if(this.guiValues["rotatedpoints"]%2!==0){
-            for(let i=0; i<mesh._flat_faces.length; i++){
-                this.ctx.beginPath();
-                for (let j=0, len=mesh._flat_faces[i].length; j < len; j++) {
-                    let p = this._MVP.getMultiplyVec(mesh._flat_faces[i][j]);
-                    // let z = p.w;
-                    p.NDC();
-                    xRange = (p.x + 1)*0.5;
-                    yRange = 1-(p.y + 1)*0.5;
-                    zRange  = (p.z + 1)*0.5;
-                    xScreen = xRange * this.width;
-                    yScreen = yRange * this.height;
-                    // if(p.z < meshCentroid.z) this.ctx.fillStyle = "rgba(255,0,64,0.8)";
-                    this.ctx.strokeStyle = "rgba(0,"+255+",0,1)";
-                    this.ctx.lineTo(xScreen, yScreen);
-                    // this.ctx.arc(xScreen, yScreen, 2*zRange, 0, Math.PI*2);
-                    // this.ctx.closePath();
-                    // this.ctx.fill();
-                }
-                this.ctx.closePath();
-                this.ctx.stroke();
-            }
-        }
         // Points -----------------------*---
-        // Midpoints --------------------*---
-        if(this.guiValues["midpoints"]%2!==0){
-            for(let i=0; i<mesh.midpoints.length; i++){
-                // let v = this._MVP.getMultiplyVec(mesh.verts[i]);
-                // Get centroid
-                let p = this._MVP.getMultiplyVec(mesh.midpoints[i]);
-                // let z = p.w;
-                p.NDC();
-                xRange = (p.x + 1)*0.5;
-                yRange = 1-(p.y + 1)*0.5;
-                zRange  = (p.z + 1)*0.5;
-                xScreen = xRange * this.width;
-                yScreen = yRange * this.height;
-                if(p.z > meshCentroid.z) this.ctx.fillStyle = "rgba(255,0,0,0.4)";
-                else this.ctx.fillStyle = "rgba(255,0,0,1)";
-                this.ctx.beginPath();
-                this.ctx.arc(xScreen, yScreen, zRange, 0, Math.PI*2);
-                this.ctx.closePath();
-                this.ctx.fill();
-            }
-        }
-        // Midpoints --------------------*---
         // Vert Numbers -----------------*---
-        if(this.guiValues["vertnumbers"]%2!==0){
+        if(this.guiValues["vertnumbers"] && this.guiValues["vertnumbers"]%2!==0){
             for(let i=0; i<this._transformedVerts.length; i++){
                 // Get centroid
                 let p = this._transformedVerts[i];
@@ -515,7 +469,7 @@ export default class Renderer{
             }
         }
         // Dual Graph -------------------**--
-        //
+
         // Spanning Tree ----------------**--
         if(this.guiValues["spanningtree"]%2!==0){
             for(let i=0; i<mesh.spanningTree.length; i++){
@@ -539,23 +493,29 @@ export default class Renderer{
         // Spanning Tree ----------------**--
 
         if(this.guiValues["shownet"]%2!==0){
-            this.ctx.fillStyle = "rgba(255, 0, 0, 0.2)";
-            // this.ctx.fillRect(250, 50, 800, 800);
+            let minX = (mesh.min2dCoords[0]);
+            let minY = (mesh.min2dCoords[1]);
+            let maxX = (mesh.max2dCoords[0]);
+            let maxY = (mesh.max2dCoords[1]);
+            let diffX = maxX - minX;
+            let diffY = maxY - minY;
+
+            let ratio = (diffX/diffY);
+            let scale = (diffX/this.width)*(this.width/0.05);
+
+            let xOffset = 250;
+            let yOffset = 50;
+
+            this.ctx.fillStyle = "rgba(255,255,255,0.8)";
+            this.ctx.fillRect(xOffset, yOffset, (diffX/ratio)*scale, (diffY/ratio)*scale);
             for(let i=0; i<mesh._transformed_flat_faces.length; i++){
-                let scale = 192;
-                let xOff = 500;
-                let yOff = 300;
-                // let branch = mesh._net[i];
-                // if(branch == undefined) continue;
-                // for(let j=0; j<branch.length; j++){
                 let face = mesh._transformed_flat_faces[i];
                 if(face === undefined) {
                     // console.error("Face missing at i=" + i);
                     continue;
                 }
                 this.ctx.beginPath();
-                // this.ctx.strokeStyle = "rgb("+Math.floor((j/branch.length)*255)+","+Math.floor((i/mesh._net.length)*255)+",0)";
-                this.ctx.lineWidth = 2;
+                this.ctx.lineWidth = 1;
                 let xSum = 0;
                 let ySum = 0;
                 for(let k=0; k<face.length; k++){
@@ -564,29 +524,27 @@ export default class Renderer{
                     let x = screen[0];
                     let y = screen[1];
 
-                    xRange = (x + 1)*0.5;
-                    yRange = 1-((y + 1)*0.5);
+                    xRange = (x + Math.abs(minX))/ratio;
+                    yRange = (y + Math.abs(minY))/ratio;
                     xScreen = xRange * scale;
                     yScreen = yRange * scale;
 
+
+                    xScreen += xOffset;
+                    yScreen += yOffset;
                     xSum += xScreen;
                     ySum += yScreen;
-
-                    xScreen += xOff;
-                    yScreen += yOff;
-
-                    // xScreen += 300;
-                    // yScreen += 100;
-                    // xScreen += i*120;
-                    // yScreen += i*30;
+                    // xScreen += Math.abs(mesh.min2dCoords[0]);
+                    // yScreen += Math.abs(mesh.min2dCoords[1]);
                     this.ctx.lineTo(xScreen, yScreen);
                 }
                 this.ctx.strokeStyle = "rgb(0,"+Math.floor((i/mesh._transformed_flat_faces.length)*255)+",0)";
                 this.ctx.closePath();
                 this.ctx.stroke();
+                this.ctx.fillStyle = "rgba(255, 0, 0, 0.2)";
                 this.ctx.fill();
-                this.ctx.strokeText(i, (xSum/face.length) + xOff, (ySum/face.length) + yOff);
-                // }
+                this.ctx.fillStyle = "rgb(0,"+Math.floor((i/mesh._transformed_flat_faces.length)*255)+",0)";
+                this.ctx.fillText(i, (xSum/face.length), (ySum/face.length));
             }
         }
 

@@ -70,7 +70,7 @@ gui.button("normals", "Face Normals", 0);
 gui.button("points", "Points", 0);
 gui.button("wireframe", "Wireframe", 0);
 gui.button("face", "Faces", 1);
-gui.button("numbers", "Face ID", 0);
+gui.button("faceid", "Face ID", 0);
 gui.title("Translation");
 gui.slider("xTrans",-9,10, 0, 0.1);
 gui.slider("yTrans",-9,10, 0, 0.1);

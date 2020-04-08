@@ -46,8 +46,6 @@ gui.title("Drawing Style");
 gui.button("colour", "Colour", 0);
 gui.button("normals", "Face Normals", 0);
 gui.button("points", "Points", 0);
-gui.button("rotatedpoints", "Rotated Points", 0);
-// gui.button("midpoints", "Line Midpoints", 1);
 gui.button("wireframe", "Wireframe", 0);
 gui.button("face", "Faces", 1);
 gui.button("facenormallines", "Face Normal Lines", 0);
@@ -70,8 +68,8 @@ gui.slider("yScale",0.2, 4, 1.4, 0.2);
 gui.slider("zScale",0.2, 4, 1.4, 0.2);
 // gui.button("recalcnorms", "Recalculate Normals", 0);
 gui.button("reset", "Reset", 0);
-gui.dropdown("mesh", Object.keys(meshes));//.map(m => m.charAt(0).toUpperCase()+m.slice(1)));
 gui.button("resetColours", "Reset Colours", 0);
+gui.dropdown("mesh", Object.keys(meshes));//.map(m => m.charAt(0).toUpperCase()+m.slice(1)));
 
 let camera = new Vec3(0,0,-15);
 let light = new Vec3(-100,-100,100);

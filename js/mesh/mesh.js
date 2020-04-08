@@ -15,12 +15,15 @@ export default class Mesh{
     _dualGraph_sorted = [];
     _spanningTree = [];
     _angles_sorted = [];
-    _midpoints = [];
     _rotated_verts = [];
     _flat_faces = [];
     _flat_norms = [];
     _faces_2d = [];
     _net = [];
+    _min2dx = 0;
+    _min2dy = 0;
+    _max2dx = 0;
+    _max2dy = 0;
 
     _transformed_flat_faces = [];
 
@@ -70,15 +73,6 @@ export default class Mesh{
     }
     get centroids(){
         return this._centroids;
-    }
-
-    set midpoints(m){
-        for(let i=0; i<m.length; i++){
-            this._midpoints[i] = m[i];
-        }
-    }
-    get midpoints(){
-        return this._midpoints;
     }
 
     get meshCentroid(){
@@ -143,6 +137,13 @@ export default class Mesh{
 
     get dualGraph(){
         return this._dualGraph;
+    }
+
+    get min2dCoords(){
+        return [(this._min2dx),(this._min2dy)];
+    }
+    get max2dCoords(){
+        return [(this._max2dx),(this._max2dy)];
     }
 
     sortIndicesByCentroid(){
@@ -469,18 +470,12 @@ export default class Mesh{
     }
 
     layoutNet(){
-        // console.log(this._dualGraph);
-        // console.log(this._dualGraph_sorted);
-        // console.warn(this._spanningTree);
-
         let sortedTree = this._spanningTree.slice();
         let root = null;
         let face2d, prev_face2d;
-        // console.warn("sortedTree", sortedTree);
-
-        // for(let i=0; i<sortedTree.length; i++){
         let i=0;
         let reverseCounter=0;
+
         while(/*this._net.length !== */sortedTree.length > 0){
             let branch = sortedTree[i];
             let netBranch = [];
@@ -497,10 +492,8 @@ export default class Mesh{
                 let previousFace;
 
                 if(k == 0 && face == root) {
-                    // netBranch[0] = this._faces_2d[face].slice();
                     netBranch.push(this._faces_2d[face].slice());
                     this._transformed_flat_faces[face] = this._faces_2d[face].slice();
-                    // console.log("Root", root);
                     continue;
                 } else if (k == 0 && face !== root) {
                     // New branch and not root
@@ -512,23 +505,8 @@ export default class Mesh{
                         else if(this._dualGraph[l][1] == face) matches.push(this._dualGraph[l][0]);
                     }
 
-                    // for(let l=0; l<matches.length; l++){
-                    // for(let m=0; m<sortedTree.length; m++){
-                    // if(sortedTree[m].includes(matches[l])){
-                    // matches.splice(m,1);
-                    // break;
-                    // }
-                    // }
-                    // }
-                    // console.log(face, "matches", matches);
-
                     if(matches.includes(root)) {
                         previousFace = root;
-                        // continue;
-                        // }
-                        // if(matches.includes(sortedTree[i-1][0])) {
-                        // previousFace = sortedTree[i-1][0];
-                        // continue;
                     } else {
                         // Revers back through the tree, it's like there will be a match at the end of the braches
                         // for(let l=sortedTree.length-1; l>-1; l--){
@@ -551,21 +529,14 @@ export default class Mesh{
                                 previousFace = match;
                             }
                         }
-                        // if(face == 9) console.log("9 prev face:", previousFace);
                     }
                 } else {
                     previousFace = branch[k-1];// || root;
                 }
 
-                // console.log("face", face, "Previous face", previousFace);
-
-
-
                 if(this._transformed_flat_faces[face] == null) face2d = this._faces_2d[face];//.slice();
                 else face2d = this._transformed_flat_faces[face];
 
-                // if(this._transformed_flat_faces[previousFace] == null) prev_face2d = this._faces_2d[previousFace];//.slice();
-                // if(previousFace == root) prev_face2d = this._transformed_flat_faces[root];
                 prev_face2d = this._transformed_flat_faces[previousFace];
 
                 if(prev_face2d == undefined) {
@@ -608,7 +579,6 @@ export default class Mesh{
                     ((angle2 > 3.141 && angle2 < 3.142) && (angle1 > -0.001 && angle1 < 0.001)) //||
                 /* (angle < 0.001 && angle > -0.001 && angle !== 0)*/ ){
                     // 180!
-                    // angle = Math.PI;
                     oneeighty = true;
                 }
 
@@ -632,6 +602,11 @@ export default class Mesh{
                     x += origin[0];
                     y += origin[1];
 
+                    this._min2dx = Math.min(this._min2dx, x);
+                    this._min2dy = Math.min(this._min2dy, y);
+                    this._max2dx = Math.max(this._max2dx, x);
+                    this._max2dy = Math.max(this._max2dy, y);
+
                     transformed_face_2d.push([x,y]);
                 }
 
@@ -654,8 +629,6 @@ export default class Mesh{
                 i++;
             }
         }
-        // console.log("net", this._net);
-        // console.log(this._transformed_flat_faces);
     }
 
     // -------------------------------------------------------------------------
