@@ -8,9 +8,10 @@ import Scene from '../js/scene/scene.js';
 
 import { Icosahedron, Octahedron, Cube } from '../js/mesh/platonicSolids.js';
 import { Torus, KleinBottle } from '../js/mesh/parametricSolid.js';
-import { IrregularOctahedron, IrregularIcosahedron } from '../js/mesh/miscSolid.js';
+import { IrregularOctahedron, IrregularIcosahedron, Icosphere } from '../js/mesh/miscSolid.js';
 
 let icosahedron = new Icosahedron();
+let icosphere = new Icosphere(1);
 let octahedron = new Octahedron();
 let cube = new Cube();
 let irregularOctahedron = new IrregularOctahedron();
@@ -27,6 +28,7 @@ klein.createFaces();
 let meshes = {
     "Irregular Icosahedron": irregularIcosahedron,
     "Icosahedron": icosahedron,
+    "Icosphere": icosphere,
     "Octahedron": octahedron,
     "Cube": cube,
     "Irregular Octahedron": irregularOctahedron,
@@ -93,17 +95,19 @@ irregularIcosahedron.create2dCoordsFromFaces();
 irregularIcosahedron.layoutNet();
 icosahedron.create2dCoordsFromFaces();
 icosahedron.layoutNet();
+icosphere.create2dCoordsFromFaces();
+icosphere.layoutNet();
 
-octahedron.create2dCoordsFromFaces();
-octahedron.layoutNet();
-cube.create2dCoordsFromFaces();
-cube.layoutNet();
-irregularOctahedron.create2dCoordsFromFaces();
-irregularOctahedron.layoutNet();
-torus.create2dCoordsFromFaces();
-torus.layoutNet();
-klein.create2dCoordsFromFaces();
-klein.layoutNet();
+// octahedron.create2dCoordsFromFaces();
+// octahedron.layoutNet();
+// cube.create2dCoordsFromFaces();
+// cube.layoutNet();
+// irregularOctahedron.create2dCoordsFromFaces();
+// irregularOctahedron.layoutNet();
+// torus.create2dCoordsFromFaces();
+// torus.layoutNet();
+// klein.create2dCoordsFromFaces();
+// klein.layoutNet();
 
 function draw(){
     renderer.render();

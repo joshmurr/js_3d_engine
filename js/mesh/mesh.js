@@ -414,7 +414,7 @@ export default class Mesh{
             else spanningTree.push(currentPair);
         }
         this.completeSpanningTree(spanningTree);
-        console.log(spanningTree);
+        // console.log(spanningTree);
 
         this.spanningTree = spanningTree.sort();
         // Create Spanning Tree ---------------------------

@@ -171,6 +171,7 @@ export class Vec4 extends Vec3{
     }
 
 
+
 /*
  *     dot(v){
  *         return this.x*v.x + this.y*v.y + this.z*v.z + this.w*v.w;
