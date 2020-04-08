@@ -506,7 +506,9 @@ export default class Renderer{
             let xOffset = 250;
             let yOffset = 50;
 
-            this.ctx.fillStyle = "rgba(255,255,255,0.8)";
+            let alpha = 0.5;
+
+            this.ctx.fillStyle = "rgba(255,255,255,0.5)";
             this.ctx.fillRect(xOffset, yOffset, (diffX/ratio)*scale, (diffY/ratio)*scale);
             for(let i=0; i<mesh._transformed_flat_faces.length; i++){
                 let face = mesh._transformed_flat_faces[i];
@@ -541,7 +543,13 @@ export default class Renderer{
                 this.ctx.strokeStyle = "rgb(0,"+Math.floor((i/mesh._transformed_flat_faces.length)*255)+",0)";
                 this.ctx.closePath();
                 this.ctx.stroke();
-                this.ctx.fillStyle = "rgba(255, 0, 0, 0.2)";
+                // this.ctx.fillStyle = "rgba(255, 0, 0, 0.2)";
+                if(this.guiValues["colour"]%2!==0 || this.guiValues["normals"]%2!==0) alpha = 1.0;
+                this.ctx.fillStyle="rgba("+
+                    this._faceColourArray[i]+","+    // R
+                    this._faceColourArray[1+i*3]+","+  // G
+                    this._faceColourArray[2+i*3]+","+   // B
+                    alpha+")";                                         // A
                 this.ctx.fill();
                 this.ctx.fillStyle = "rgb(0,"+Math.floor((i/mesh._transformed_flat_faces.length)*255)+",0)";
                 this.ctx.fillText(i, (xSum/face.length), (ySum/face.length));
