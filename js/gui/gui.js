@@ -83,6 +83,39 @@ export default class GUI {
         this.body.appendChild(mobile);
     }
 
+    about(id, _text, _value, _message){
+        let button = document.createElement("button");
+        button.id = id;
+        this.id_list.push(button.id);
+        button.value = _value;
+        button.textContent = _text;
+
+        let message = document.createElement("div");
+        message.id = "aboutBox";
+        message.classList.add("about");
+        message.classList.add("hide");
+        let text = document.createElement("P");
+        text.textContent = String(_message);
+        message.appendChild(text);
+
+        if(_value !== 0) {
+            button.classList.add("selected");
+            message.classList.toggle("hide", false);
+            message.classList.toggle("show", true);
+        } 
+        button.onclick = function(){
+            if(this.id !== "reset") this.classList.toggle("selected");
+            if(this.id == "about") {
+                document.getElementById("aboutBox").classList.toggle("hide");
+                document.getElementById("aboutBox").classList.toggle("show");
+            }
+            this.value++;
+        }
+
+        this.menuContainer.appendChild(button);
+        this.body.appendChild(message);
+    }
+
     cleanArg(_arg){
         return _arg.toLowerCase().replace(/ /g,'');
     }

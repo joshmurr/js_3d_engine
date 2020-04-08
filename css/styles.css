@@ -30,6 +30,8 @@ canvas{
     text-align: center;
 }
 
+
+
 #menu {
     position: fixed;
     /* display: block; */
@@ -63,6 +65,30 @@ canvas{
 .subtitle{
     background-color: lightgray;
     line-height:2em;
+}
+
+.about{
+    position: absolute;
+    width: 400px;
+    height: 14.4em;
+    top: 0px;
+    left: 160px;
+    padding-left: 1em;
+    line-height: 1.2em;
+    background-color: lightgray;
+    z-index: 997;
+}
+
+.about p {
+    font-size: 0.8em;
+}
+
+.show{
+    display: none;
+}
+
+.hide{
+    display: none;
 }
 
 .input{
@@ -117,6 +143,7 @@ button.selected{
     .mobile {
         display: none;
     }
+
 }
 
 /* Laptop */
@@ -125,6 +152,9 @@ button.selected{
         display: block;
         height: 1.8em;
         font-size: 0.8em;
+    }
+    .show{
+        display: block;
     }
 }
 
@@ -141,5 +171,13 @@ button.selected{
         width: 2em;
         height: 2em;
         border-radius: 3px;
+    }
+    .about{
+        width: 400px;
+        height: 18em;
+        left: 200px;
+    }
+    .about p {
+        font-size: 1em;
     }
 }

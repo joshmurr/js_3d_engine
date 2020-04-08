@@ -370,13 +370,13 @@ export default class Renderer{
             zRange = (centroid.z + 1)*0.5;
             xScreen = xRange * this.width;
             yScreen = yRange * this.height;
+            this.ctx.font = String("15px Roboto Mono");
 
             // Centroid Numbers -------------**--
             if(this.guiValues["faceid"]%2!==0){
                 // Only multiply by the ViewProjection matrix as the centroid already to the model
                 // matrix manipulation applied.
                 this.ctx.fillStyle="rgb("+Math.floor(xRange*128)+127+","+Math.floor(yRange*128)+127+","+Math.floor(zRange*128)+127+")";
-                this.ctx.font = String(Math.floor(zRange * 5) + "px Roboto Mono");
                 this.ctx.fillText(sorted_indices[i], xScreen, yScreen);
             }
             // Centroid Numbers -------------**--
@@ -438,7 +438,7 @@ export default class Renderer{
                 if(p.z > meshCentroid.z) this.ctx.fillStyle = "rgba(255,0,0,0.4)";
                 else this.ctx.fillStyle = "rgba(255,0,0,1)";
                 // this.ctx.fillStyle="rgb("+Math.floor(xRange*128)+127+","+Math.floor(yRange*128)+127+","+Math.floor(zRange*128)+127+")";
-                this.ctx.font = String(Math.floor(zRange * 5) + "px Roboto Mono");
+                // this.ctx.font = String(Math.floor(zRange * 5) + "px Roboto Mono");
                 this.ctx.fillText(i, xScreen, yScreen);
             }
         }
@@ -501,7 +501,7 @@ export default class Renderer{
             let diffY = maxY - minY;
 
             let ratio = (diffX/diffY);
-            let scale = (diffX/this.width)*(this.width/0.05);
+            let scale = 600;
 
             let xOffset = 250;
             let yOffset = 50;
@@ -509,7 +509,7 @@ export default class Renderer{
             let alpha = 0.5;
 
             this.ctx.fillStyle = "rgba(255,255,255,0.5)";
-            this.ctx.fillRect(xOffset, yOffset, (diffX/ratio)*scale, (diffY/ratio)*scale);
+            this.ctx.fillRect(xOffset, yOffset, (diffX/diffY)*scale, scale);
             for(let i=0; i<mesh._transformed_flat_faces.length; i++){
                 let face = mesh._transformed_flat_faces[i];
                 if(face === undefined) {
@@ -526,8 +526,8 @@ export default class Renderer{
                     let x = screen[0];
                     let y = screen[1];
 
-                    xRange = (x + Math.abs(minX))/ratio;
-                    yRange = (y + Math.abs(minY))/ratio;
+                    xRange = (x + Math.abs(minX))/diffY;
+                    yRange = (y + Math.abs(minY))/diffY;
                     xScreen = xRange * scale;
                     yScreen = yRange * scale;
 

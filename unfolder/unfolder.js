@@ -52,7 +52,7 @@ gui.button("points", "Points", 0);
 gui.button("wireframe", "Wireframe", 0);
 gui.button("face", "Faces", 1);
 gui.button("facenormallines", "Face Normal Lines", 0);
-gui.button("numbers", "Face ID", 1);
+gui.button("faceid", "Face ID", 0);
 gui.button("vertnumbers", "Vert ID", 0);
 gui.button("dualgraph", "Dual Graph", 0);
 gui.button("spanningtree", "Spanning Tree", 0);
@@ -108,7 +108,6 @@ icosahedron.create2dCoordsFromFaces();
 icosahedron.layoutNet();
 icosphere.create2dCoordsFromFaces();
 icosphere.layoutNet();
-
 octahedron.create2dCoordsFromFaces();
 octahedron.layoutNet();
 cube.create2dCoordsFromFaces();
