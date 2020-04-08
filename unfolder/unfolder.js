@@ -15,7 +15,7 @@ let octahedron = new Octahedron();
 let cube = new Cube();
 let irregularOctahedron = new IrregularOctahedron();
 let irregularIcosahedron = new IrregularIcosahedron();
-let torus = new Torus(6,6, 0, Math.PI*2, 0, Math.PI*2, 1.2, 0.4);
+let torus = new Torus(8,8, 0, Math.PI*2, 0, Math.PI*2, 1.2, 0.4);
 let klein = new KleinBottle(4,4, 0, Math.PI*2, 0, Math.PI*2);
 
 torus.createVerts();
@@ -30,8 +30,8 @@ let meshes = {
     "Octahedron": octahedron,
     "Cube": cube,
     "Irregular Octahedron": irregularOctahedron,
-    // "Torus": torus,
-    // "Klein": klein,
+    "Torus": torus,
+    "Klein": klein,
 };
 
 let gui = new GUI();
@@ -44,15 +44,16 @@ gui.title("Drawing Style");
 gui.button("colour", "Colour", 0);
 gui.button("normals", "Face Normals", 0);
 gui.button("points", "Points", 0);
-gui.button("rotatedpoints", "Rotated Points", 1);
+gui.button("rotatedpoints", "Rotated Points", 0);
 // gui.button("midpoints", "Line Midpoints", 1);
 gui.button("wireframe", "Wireframe", 0);
 gui.button("face", "Faces", 1);
 gui.button("facenormallines", "Face Normal Lines", 0);
 gui.button("numbers", "Face ID", 1);
-gui.button("vertnumbers", "Vert ID", 1);
+gui.button("vertnumbers", "Vert ID", 0);
 gui.button("dualgraph", "Dual Graph", 0);
-gui.button("spanningtree", "Spanning Tree", 1);
+gui.button("spanningtree", "Spanning Tree", 0);
+gui.button("shownet", "Show Net", 1);
 gui.title("Translation");
 gui.slider("xTrans",-9,10, 0, 0.1);
 gui.slider("yTrans",-9,10, 0, 0.1);
@@ -69,7 +70,6 @@ gui.slider("zScale",0.2, 4, 1.4, 0.2);
 gui.button("reset", "Reset", 0);
 gui.dropdown("mesh", Object.keys(meshes));//.map(m => m.charAt(0).toUpperCase()+m.slice(1)));
 gui.button("resetColours", "Reset Colours", 0);
-gui.button("newcam", "New Random Cam", 0);
 
 let camera = new Vec3(0,0,-15);
 let light = new Vec3(-100,-100,100);
@@ -89,10 +89,6 @@ for(let mesh in meshes){
     meshes[mesh].createSpanningTree();
 }
 
-// irregularOctahedron.sortDualGraphByAngleBetweenFaces();
-// icosahedron.sortDualGraphByAngleBetweenFaces();
-
-
 irregularIcosahedron.create2dCoordsFromFaces();
 irregularIcosahedron.layoutNet();
 icosahedron.create2dCoordsFromFaces();
@@ -104,10 +100,10 @@ cube.create2dCoordsFromFaces();
 cube.layoutNet();
 irregularOctahedron.create2dCoordsFromFaces();
 irregularOctahedron.layoutNet();
-// torus.create2dCoordsFromFaces();
-// torus.layoutNet();
-// klein.create2dCoordsFromFaces();
-// klein.layoutNet();
+torus.create2dCoordsFromFaces();
+torus.layoutNet();
+klein.create2dCoordsFromFaces();
+klein.layoutNet();
 
 function draw(){
     renderer.render();

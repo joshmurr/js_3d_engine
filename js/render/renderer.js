@@ -1,9 +1,5 @@
 import { randomVecRGB } from  '../math/utils.js'
 import { Vec3, Vec4, Mat33, Mat44 } from  '../math/math.js'
-// import Vec3 from '../math/vec3.js'
-// import Vec4 from '../math/vec4.js'
-// import Mat33 from '../math/mat33.js'
-// import Mat44 from '../math/mat44.js'
 
 export default class Renderer{
     ctx = null;
@@ -542,16 +538,21 @@ export default class Renderer{
         }
         // Spanning Tree ----------------**--
 
-        this.ctx.fillStyle = "rgba(255, 0, 0, 0.2)";
-        // this.ctx.fillRect(250, 50, 800, 800);
-        for(let i=0; i<mesh._transformed_flat_faces.length; i++){
-            let scale = 128;
-            let xOff = 500;
-            let yOff = 300;
-            // let branch = mesh._net[i];
-            // if(branch == undefined) continue;
-            // for(let j=0; j<branch.length; j++){
+        if(this.guiValues["shownet"]%2!==0){
+            this.ctx.fillStyle = "rgba(255, 0, 0, 0.2)";
+            // this.ctx.fillRect(250, 50, 800, 800);
+            for(let i=0; i<mesh._transformed_flat_faces.length; i++){
+                let scale = 192;
+                let xOff = 500;
+                let yOff = 300;
+                // let branch = mesh._net[i];
+                // if(branch == undefined) continue;
+                // for(let j=0; j<branch.length; j++){
                 let face = mesh._transformed_flat_faces[i];
+                if(face === undefined) {
+                    console.error("Face missing at i=" + i);
+                    continue;
+                }
                 this.ctx.beginPath();
                 // this.ctx.strokeStyle = "rgb("+Math.floor((j/branch.length)*255)+","+Math.floor((i/mesh._net.length)*255)+",0)";
                 this.ctx.lineWidth = 2;
@@ -583,9 +584,10 @@ export default class Renderer{
                 this.ctx.strokeStyle = "rgb(0,"+Math.floor((i/mesh._transformed_flat_faces.length)*255)+",0)";
                 this.ctx.closePath();
                 this.ctx.stroke();
-            this.ctx.fill();
+                this.ctx.fill();
                 this.ctx.strokeText(i, (xSum/face.length) + xOff, (ySum/face.length) + yOff);
-            // }
+                // }
+            }
         }
 
 
