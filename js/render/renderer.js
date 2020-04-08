@@ -550,7 +550,7 @@ export default class Renderer{
                 // for(let j=0; j<branch.length; j++){
                 let face = mesh._transformed_flat_faces[i];
                 if(face === undefined) {
-                    console.error("Face missing at i=" + i);
+                    // console.error("Face missing at i=" + i);
                     continue;
                 }
                 this.ctx.beginPath();

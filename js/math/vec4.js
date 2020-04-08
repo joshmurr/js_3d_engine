@@ -131,6 +131,18 @@ export class Vec4 extends Vec3{
         }
     }
 
+    normalizeAsVec3(){
+        let lSq = this.x*this.x + this.y*this.y + this.z*this.z;
+        if(lSq < Utils.smallNum) this.zero();
+        else {
+            let l = Math.sqrt(lSq);
+            this.x /= l;
+            this.y /= l;
+            this.z /= l;
+            this.w = 1;
+        }
+    }
+
     getNormalize(){
         let lSq = this.lengthSquared;
         if(lSq < Utils.smallNum) {

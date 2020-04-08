@@ -3,9 +3,6 @@ import { Icosahedron } from "./platonicSolids.js";
 export class Icosphere extends Icosahedron{
     constructor(iterations){
         super();
-        // this._radius = this.verts[0].length;
-        this._radius = (1 + Math.sqrt(5)) / 2;
-        // this._iterations = iterations;
         this._vertIndex = {};
         this._vertIdCounter = 0;
         for(let i=0; i<this.verts.length; i++) this.addToVertIndex(this.verts[i]);
@@ -16,8 +13,7 @@ export class Icosphere extends Icosahedron{
         let ret = v1.getAdd(v2);
         ret.multiply(0.5);
         ret.normalize();
-        ret.multiply(this._radius);
-        ret.w = 1;
+        // ret.w = 1;
         this.addToVertIndex(ret);
         return ret;
     }
