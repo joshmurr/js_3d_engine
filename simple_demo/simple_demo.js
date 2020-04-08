@@ -7,7 +7,7 @@ import Renderer from '../js/render/renderer.js';
 import Scene from '../js/scene/scene.js';
 
 import { Icosahedron, Octahedron, Tetrahedron, Cube } from '../js/mesh/platonicSolids.js';
-import { Torus, KleinBottle, MobiusTube, SineSurface, EightSurface, HyperbolicOctahedron, CrossCap } from '../js/mesh/parametricSolid.js';
+import { Sphere, Torus, KleinBottle, MobiusTube, SineSurface, EightSurface, HyperbolicOctahedron, CrossCap } from '../js/mesh/parametricSolid.js';
 import { Teapot2 } from '../js/mesh/miscSolid.js';
 
 let icosahedron = new Icosahedron();
@@ -19,6 +19,7 @@ let torus = new Torus(16, 16, 0, Math.PI*2, 0, Math.PI*2, 2, 1);
 let klein = new KleinBottle(16, 32, 0, Math.PI*2, 0, Math.PI*2);
 let mobiusTube = new MobiusTube(16, 16, 0, Math.PI*2, 0, Math.PI*2, 1, 2);
 let sineSurface = new SineSurface(32, 32, 0, Math.PI*2, 0, Math.PI*2, 1);
+let sphere = new Sphere(8, 8, 0, Math.PI*2, 0, Math.PI*2);
 let eightSurface = new EightSurface(32, 32, 0, Math.PI*2, -Math.PI/2, Math.PI/2);
 let hyperbolicOctahedron = new HyperbolicOctahedron(32, 32, -Math.PI/2, Math.PI/2, -Math.PI, Math.PI);
 let crossCap = new CrossCap(16, 16, 0, Math.PI*2, 0, Math.PI/2);
@@ -27,6 +28,9 @@ torus.createFaces();
 
 klein.createVerts();
 klein.createFaces();
+
+sphere.createVerts();
+sphere.createFaces();
 
 mobiusTube.createVerts();
 mobiusTube.createFaces();
@@ -51,6 +55,7 @@ let meshes = {
     "Octahedron" : octahedron,
     "Tetrahedron": tetrahedron,
     "Cube": cube,
+    "Sphere": sphere,
     "Torus": torus,
     "Sine Surface": sineSurface,
     "Cross Cap": crossCap,
@@ -62,6 +67,7 @@ let meshes = {
 };
 
 let gui = new GUI();
+gui.mobile("Sorry, best on desktop.");
 gui.menu();
 gui.title("Simple Demo");
 gui.title("Drawing Style");

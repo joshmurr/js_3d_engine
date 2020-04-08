@@ -1,3 +1,4 @@
+export { Sphere } from './sphere.js';
 export { Torus } from './torus.js';
 export { KleinBottle } from './klein.js';
 export { MobiusTube } from './mobiusTube.js';
