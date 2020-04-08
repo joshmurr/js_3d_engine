@@ -83,6 +83,16 @@ scene.backgroundColour = new Vec3(220, 240, 255);
 let renderer = new Renderer(scene);
 renderer.setup();
 
+if(window.attachEvent){
+    window.attachEvent("onresize", function() {
+        renderer.updateCanvas()
+    }, false);
+} else if(window.addEventListener){
+    window.addEventListener("resize", function() {
+        renderer.updateCanvas()
+    }, false);
+}
+
 // Setup meshes
 for(let mesh in meshes){
     meshes[mesh].computeFaceNormals();

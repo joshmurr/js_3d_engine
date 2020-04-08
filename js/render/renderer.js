@@ -575,7 +575,6 @@ export default class Renderer{
         if(document.getElementsByName("canvas").length == 1){
             console.log("Canvas found");
         } else {
-
             let canvas = document.createElement("canvas");
             this.width = _width;
             this.height = _height;
@@ -597,6 +596,16 @@ export default class Renderer{
             this.ctx.fillStyle = "rgba(255, 0, 255, 0.5)";
             this.ctx.fillRect(0, 0, 5, 5);
         }
+    }
+
+    updateCanvas(_width=window.innerWidth, _height=window.innerHeight){
+        let canvas = document.querySelector("canvas");
+        this.width = _width;
+        this.height = _height;
+        canvas.width = this.width;
+        canvas.height = this.height;
+        // this.ctx = canvas.getContext("2d");
+        this.setup();
     }
 
     findGUIElements(_idList){
