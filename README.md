@@ -34,6 +34,19 @@ I've scoured the internet and have read a lot for this project. Here are a few o
 
 [OpenGL-Tutorial: Matrices](http://www.opengl-tutorial.org/beginners-tutorials/tutorial-3-matrices/#the-projection-matrix)
 
+[Stackoverflow: Getting local 2D coordinates of vertices of a planar polygon in 3D space](https://stackoverflow.com/questions/26369618/getting-local-2d-coordinates-of-vertices-of-a-planar-polygon-in-3d-space#26370192)
+
+[Stackoverflow: How do axis-angle rotation vectors work and how do they compare to rotation matrices?](How do axis-angle rotation vectors work and how do they compare to rotation matrices?)
+
+[Stackoverflow: Projecting 3D points to 2D plane](https://stackoverflow.com/questions/23472048/projecting-3d-points-to-2d-plane)
+
+[Find the angle between two planes using their normal vectors](https://math.stackexchange.com/questions/1528909/find-the-angle-between-two-planes-using-their-normal-vectors)
+
+[*Rotation About an Arbitrary Axis in 3 Dimensions*](https://sites.google.com/site/glennmurray/Home/rotation-matrices-and-formulas/rotation-about-an-arbitrary-axis-in-3-dimensions)
+
+[Creating an icosphere mesh in code](http://blog.andreaskahler.com/2009/06/creating-icosphere-mesh-in-code.html)
+
+
 ### Unfolding Algorithm
 
 [Houdini Gubbins: Unfolding Meshes](https://houdinigubbins.wordpress.com/2017/05/12/unfolding-geometry/)
@@ -46,8 +59,23 @@ I've scoured the internet and have read a lot for this project. Here are a few o
 
 [Find Cycle in Undirected Graph](https://algorithms.tutorialhorizon.com/graph-find-cycle-in-undirected-graph-using-disjoint-set-union-find/)
 
+[Creating Optimized Cut-Out Sheets for Paper Models from Meshes](https://geom.ivd.kit.edu/downloads/proj-paper-models_cut_out_sheets.pdf)
+
+[Imaging maths - Unfolding polyhedra](https://plus.maths.org/content/os/issue27/features/mathart/index)
+
+[Nets of Polyhedra](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.28.2631&rep=rep1&type=pdf)
+
+
 ### Tools 
 
 [Matrix Calculator](https://matrixcalc.org/en)
 
 [Vector Calculator](https://www.symbolab.com/solver/vector-calculator)
+
+[Rotate a point about an arbitrary axis](http://twist-and-shout.appspot.com/#0.70710678_0_0.70710678_1_0_0_0_-1.5_0_38.5)
+
+### Maths
+
+[Dot Product](https://brilliant.org/wiki/dot-product-definition/)
+
+[Dot Products and Projections](https://sites.science.oregonstate.edu/math/home/programs/undergrad/CalculusQuestStudyGuides/vcalc/dotprod/dotprod.html)

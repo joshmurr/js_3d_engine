@@ -56,8 +56,12 @@ canvas{
 }
 
 .title{
-    background-color: gray;
-    color: black;
+    background-color: darkgray;
+    line-height:2em;
+}
+
+.subtitle{
+    background-color: lightgray;
     line-height:2em;
 }
 
@@ -109,7 +113,7 @@ button.selected{
     border-radius: 2px;
 }
 
-@media screen and (min-width: 400px) {
+@media screen and (min-width: 600px) {
     .mobile {
         display: none;
     }

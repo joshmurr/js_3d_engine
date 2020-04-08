@@ -15,9 +15,10 @@ export default class GUI {
         this.body.appendChild(this.menuContainer);
     }
 
-    title(_title){
+    title(_title, _subtitle=false){
         let title = document.createElement("div");
-        title.classList.add("title");
+        if(_subtitle) title.classList.add("subtitle");
+        else title.classList.add("title");
         title.textContent = _title;
         this.menuContainer.appendChild(title);
     }

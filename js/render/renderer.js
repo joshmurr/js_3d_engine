@@ -563,6 +563,7 @@ export default class Renderer{
                 if(guiElem !== "mesh"){ // Don't reset the mesh
                     let ele = document.getElementById(guiElem);
                     ele.value = this.guiValuesRESET[guiElem];
+                    if(!this.guiValuesRESET[guiElem]) ele.classList.toggle("selected", false);
                 }
             }
         }

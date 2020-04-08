@@ -70,7 +70,7 @@ let gui = new GUI();
 gui.mobile("Sorry, best on desktop.");
 gui.menu();
 gui.title("Simple Demo");
-gui.title("Drawing Style");
+gui.title("Drawing Style", true);
 gui.button("colour", "Colour", 0);
 gui.button("normals", "Face Normals", 0);
 gui.button("points", "Points", 0);
@@ -90,8 +90,8 @@ gui.slider("xScale",0.2, 4, 1.2, 0.2);
 gui.slider("yScale",0.2, 4, 1.2, 0.2);
 gui.slider("zScale",0.2, 4, 1.2, 0.2);
 gui.button("reset", "Reset", 0);
-gui.dropdown("mesh", Object.keys(meshes));//.map(m => m.charAt(0).toUpperCase()+m.slice(1)));
 gui.button("resetColours", "Reset Colours", 0);
+gui.dropdown("mesh", Object.keys(meshes));//.map(m => m.charAt(0).toUpperCase()+m.slice(1)));
 
 let camera = new Vec3(0,0,-15);
 let light = new Vec3(-100,-100,100);
