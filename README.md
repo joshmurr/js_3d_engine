@@ -1,5 +1,11 @@
 # JS 3D Engine
 
+---
+
+This was created as an Easter project while studying for a MSc in Creative Computing at the Creative Computing Institute in London. It just so happened to be the _Corona Virus lockdown_ so I had a fair amount of time on my hands.
+
+---
+
 I made [a tool to generate and animate parametric solids and surfaces](https://js-geom.now.sh/) ([repo here](https://github.com/joshmurr/geometry_js)) but the rendering method was quite basic and it reached it's limits with wireframe models. So in making a slightly more sophisticaed renderer I ended up with this small Javascript framework. I tried my best to create something which is relatively general purpose which I could use for future experiments. The first of which was making a tool to unfold the 3D solids - [I got into more detail about that project here](https://github.com/joshmurr/js_3d_engine/tree/master/unfolder). Here I will go through some of the features of the core renderer and how it works.
 
 ## Vectors and Matrices
@@ -68,7 +74,7 @@ The scene is a simple little class which packages up the camera and mesh, and ha
 
 ## Render
 
-The `render` class does a lot. It initialises by creating a Projection and a View matrix based on the screen aspect ratio and the camera defined at the start (these are better described and explained in the resources below. It took me a long time to actually get this working and I'm still not convinced it's quite right). These matrices get multiplied by the model matrix and finally manipulate the mesh vertices creating a homogenous coordinate which gets converted to a screen coordinate which the canvas uses to draw things on the screen! Simple! Of course it was not that simple when building from the ground up. The aforementioned column-major VS row-major notation AND/OR storage methods made reading many different books and online resources doubly confusing, and also makes you doubt your own implementation when things don't work. [This](https://www.scratchapixel.com/lessons/mathematics-physics-for-computer-graphics/geometry/row-major-vs-column-major-vector) article on [Scratchapixel](https://www.scratchapixel.com/) was great and simplifying that. 
+The `render` class does a lot. It initialises by creating a Projection and a View matrix based on the screen aspect ratio and the camera defined at the start (these are better described and explained in the resources below. It took me a long time to actually get this working and I'm still not convinced it's quite right). These matrices get multiplied by the model matrix and finally manipulate the mesh vertices creating a homogenous coordinate which gets converted to a screen coordinate which the canvas uses to draw things on the screen! Simple! Of course it was not that simple when building from the ground up. The aforementioned column-major VS row-major notation AND/OR storage methods made reading many different books and online resources doubly confusing, and also makes you doubt your own implementation when things don't work. [This](https://www.scratchapixel.com/lessons/mathematics-physics-for-computer-graphics/geometry/row-major-vs-column-major-vector) article on [Scratchapixel](https://www.scratchapixel.com/) was great at simplifying that. 
 
 The render loop has different style layers (faces, wireframe, points, etc.) which can be turned on or off in the GUI. Each style is evaluated in sequence to maintain the correct back to front drawing wherever possible. All vertices are transformed by the MVP matrix intially and stored in and array `_transformed_normals`. The first grouping of style are those which are drawn based on the face index: faces, wireframe, the face IDs and the face normal lines. Each of these styles drawn based on the face (grouping of 3 or 4 vertices) which is referenced from the `sorted_indices` array. The next group of style are based on other arrays (points, dual graph, spanning tree) and so are rendered in individual loops of their own.
 
@@ -92,7 +98,7 @@ gui.title("Translation", true);
 gui.slider("xTrans",-9,10, 0, 0.1);
 ```
 
-The GUI class then stores all the GUI element ID's in an array which is what gets passed around to the renderer or to the scene which allows the mesh to access the GUI element __values__ when creating the model matrix, or for the renderer find out which buttons are turned on or off. The styles are in `styles.css` and are simply toggled on or off depending on their state.
+The GUI class then creates relevant DOM elements, applies styles and stores all the GUI element ID's in an array which is what gets passed around to the renderer or to the scene which allows the mesh to access the GUI element __values__ when creating the model matrix, or for the renderer to find out which buttons are turned on or off. The styles are in `styles.css` and are simply toggled on or off depending on their state.
 
 
 ## Tests

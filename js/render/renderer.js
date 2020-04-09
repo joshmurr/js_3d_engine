@@ -85,10 +85,10 @@ export default class Renderer{
         projMat.M[8]  = (right+left)/(right-left);
         projMat.M[9]  = (top_+bottom)/(top_-bottom);
         projMat.M[10] = -(_far+_near) / (_far - _near);
-        projMat.M[11] = -1;
+        projMat.M[11] = -2*_near*_far / (_far - _near);
         projMat.M[12]  = 0;
         projMat.M[13]  = 0;
-        projMat.M[14] = -2*_near*_far / (_far - _near);
+        projMat.M[14] = -1;
         projMat.M[15] = 0;
 
         return projMat;
@@ -492,7 +492,7 @@ export default class Renderer{
             let xOffset = 250;
             let yOffset = 50;
 
-            let alpha = 0.5;
+            let alpha = 0.8;
 
             this.ctx.fillStyle = "rgba(255,255,255,0.5)";
             this.ctx.fillRect(xOffset, yOffset, (diffX/diffY)*scale, scale);
