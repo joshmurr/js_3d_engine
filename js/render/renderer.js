@@ -85,10 +85,10 @@ export default class Renderer{
         projMat.M[8]  = (right+left)/(right-left);
         projMat.M[9]  = (top_+bottom)/(top_-bottom);
         projMat.M[10] = -(_far+_near) / (_far - _near);
-        projMat.M[11] = -2*_near*_far / (_far - _near);
+        projMat.M[11] = -1;
         projMat.M[12]  = 0;
         projMat.M[13]  = 0;
-        projMat.M[14] = -1;
+        projMat.M[14] = -2*_near*_far / (_far - _near);
         projMat.M[15] = 0;
 
         return projMat;
@@ -215,21 +215,7 @@ export default class Renderer{
         this._wireframePoints =  new Array(maxArraySize); // Number of indices * 3 for P0 P1 P2
     }
 
-    initMVP(){
-
-    }
-
-    lookAtNextFace(){
-        let mesh = this.scene.meshes[this.guiValues["mesh"]];
-        let centroid = mesh.centroids
-
-
-    }
-
-
-
     render(){
-        // console.log(this.scene.meshes[this.guiValues["mesh"]]);
         let mesh = this.scene.meshes[this.guiValues["mesh"]];
         // I don't know why I need to update these every frame, but it doesn't work if I dont...
         this._MVP.multiplyMat(this._projectionMat);
