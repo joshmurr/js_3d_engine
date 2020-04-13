@@ -85,10 +85,10 @@ export default class Renderer{
         projMat.M[8]  = (right+left)/(right-left);
         projMat.M[9]  = (top_+bottom)/(top_-bottom);
         projMat.M[10] = -(_far+_near) / (_far - _near);
-        projMat.M[11] = -2*_near*_far / (_far - _near);
+        projMat.M[11] = -1;
         projMat.M[12]  = 0;
         projMat.M[13]  = 0;
-        projMat.M[14] = -1;
+        projMat.M[14] = -2*_near*_far / (_far - _near);
         projMat.M[15] = 0;
 
         return projMat;
@@ -259,7 +259,7 @@ export default class Renderer{
                 let normalTransformMatrix = this._MVP.getAffineInverse();
                 normalTransformMatrix.transpose();
                 transformedNormal = normalTransformMatrix.getMultiplyVec(norm);
-                dir = transformedNormal.dot(new Vec4(0,0,-1000)); // Dot with vec way behind mesh
+                dir = transformedNormal.dot(new Vec4(0,0,1000)); // Dot with vec way behind mesh
                 let diffuse = Math.max(0, Math.abs(transformedNormal.dot(this.scene.light)));
 
                 if(mesh.colour && this.guiValues["colour"]%2!==0){
@@ -538,7 +538,7 @@ export default class Renderer{
                     alpha+")";                                         // A
                 this.ctx.fill();
                 this.ctx.fillStyle = "rgb(0,"+Math.floor((i/mesh._transformed_flat_faces.length)*255)+",0)";
-                this.ctx.fillText(i, (xSum/face.length), (ySum/face.length));
+                this.ctx.fillText(i, (xSum/face.length)-8, (ySum/face.length)+7);
             }
         }
 

@@ -20,7 +20,7 @@ Next we turn the dual graph into a __spanning tree__. The purpose of the spannin
 
 First you sort the dual graph based on a given weighting. I experimented with a few different ways of sorting, but I found the most successful to be based on the angle between the pair of faces. This can be found quite easily using the dot product of the two face normals.
 
-Next I sort each pair in the dual graph by its area, putting the largest first. This is to put a secondary weighting on the larger face sizes (a tip I picked up [here] (https://houdinigubbins.wordpress.com/2017/05/12/unfolding-geometry/)).
+Next I sort each pair in the dual graph by its area, putting the largest first. This is to put a secondary weighting on the larger face sizes (a tip I picked up [here](https://houdinigubbins.wordpress.com/2017/05/12/unfolding-geometry/)).
 
 Then I found I had to re-iterate over the dual graph once to more to make sure there is at least one occurance of each face as a parent and a child. If it is a large face then it will always be a parent. So reversing back through the dual graph I swap each pair where this makes sense to do so.
 
@@ -44,7 +44,7 @@ The spanning tree when drawn makes a lot more sense:
 
 ![Torus Spanning Tree](../img/spanningtree2.png)
 
-Despite the face that the visual spanning tree looking good, the numerical representation reveals that it is not always great. Particularly in shapes which have all faces of the same size and shape (platonic solids). The icosahedron became my test case in this instance which has a spanning tree like so:
+Despite the _visual_ spanning tree looking good, the numerical representation reveals that it is not always great. Particularly in shapes which have all faces of the same size and shape (platonic solids). The icosahedron became my test case in this instance which has a spanning tree like so:
 
 ```
 ------------------
@@ -67,7 +67,7 @@ I could either tackle the problem here, in the creation of the spanning tree, bu
 
 ## The Net
 
-This was the final __headache__ of the whole project, or at least the most recent. There are _many_ ways of approaching this problem. You could literally attempt to unfold the mesh face-by-face (I tried that), or flatten each face onto the XZ plane using rotations and translations (I tried that too), OR you could use some nifty maths to project each face only a virtual plane and convert 3D coordinates to 2D x and y coordinates (I did that one). `create2dCoordsFromFaces()` does just that.
+This was the final __headache__ of the whole project, or at least the most recent. There are _many_ ways of approaching this problem. You could literally attempt to unfold the mesh face-by-face (I tried that), or flatten each face onto the XZ plane using rotations and translations (I tried that too), OR you could use some nifty maths to project each face on to a virtual plane and convert 3D coordinates to 2D x and y coordinates (I did that one). `create2dCoordsFromFaces()` does just that.
 
 At this point there is a spanning tree which describes how the net should be contructed, and there is an array of each face in terms of x and y coordinates. `layoutNet()` is a pretty large funciton which iterates through the spanning tree by branch and attempts to place each face, starting from the root of the branch (what should be the biggest face) and place each successive face by rotating it to line up the joining vertices with the previous face.
 
