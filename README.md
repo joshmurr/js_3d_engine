@@ -12,7 +12,7 @@ I made [a tool to generate and animate parametric solids and surfaces](https://j
 
 The bulk of the maths is handled by the Vec4 and Mat44 classes. I started by writing Vec3 and Mat33 classes which in many cases would be useful, but I found it easier to create all vectors as Vec4's, initialised with `w=1` so that I didn't have to expand Vec3's later down the pipeline to render them to the screen. The latter is more desireable as things got a bit messy at times as I had to write functions like `normalizeAsVec3()` which normalizes the vector while ignoring the `w` component (which is useful when generating solids of 'unit' size).
 
-The matrices are stored in __column major__ format likeG GLSL. This caused a headache for me at times as different libraries and languages store matrices differently, and the notation can vary too - so it's worth being clear. A matrix is created and stored like so:
+The matrices are stored in __column major__ format like GLSL. This caused a headache for me at times as different libraries and languages store matrices differently, and the notation can vary too - so it's worth being clear. A matrix is created and stored like so:
 
 ```
 M = [ 0  4   8  12     ===  M = [ 0, 1, 2, 3, ... , 15 ]  
