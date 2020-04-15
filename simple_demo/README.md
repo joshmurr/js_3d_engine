@@ -26,9 +26,9 @@ As you are repeating this process for every face, the tricky part is keeping tra
 
 ```javascript
 addToVertIndex(v){
-    // Create ID unique to given vertex
+    // Create key unique to given vertex
     let k = String(v.x).substring(0,5)+String(v.y).substring(0,5)+String(v.z).substring(0,5);
-    // if ID already exists, return
+    // if key already exists, return
     if(this._vertIndex[k]) return;
     // else add to the dictionary with and incremented ID number, and the vertex position
     else this._vertIndex[k] = [this._vertIdCounter++, v];
