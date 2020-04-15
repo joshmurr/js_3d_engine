@@ -83,7 +83,7 @@ export default class GUI {
         this.body.appendChild(mobile);
     }
 
-    about(id, _text, _value, _message){
+    about(id, _text, _value, _messages){
         let button = document.createElement("button");
         button.id = id;
         this.id_list.push(button.id);
@@ -94,9 +94,31 @@ export default class GUI {
         message.id = "aboutBox";
         message.classList.add("about");
         message.classList.add("hide");
-        let text = document.createElement("P");
-        text.textContent = String(_message);
-        message.appendChild(text);
+        for(let m of _messages){
+            let text = document.createElement("P");
+            text.textContent = String(m);
+            message.appendChild(text);
+        }
+
+        let link1 = document.createElement("div");
+        link1.classList.add("aboutLink");
+        let githubLink = document.createElement("a");
+        let githubLinklinkText = document.createTextNode("Github");
+        githubLink.appendChild(githubLinklinkText);
+        githubLink.title = "github";
+        githubLink.href = "http://www.github.com/joshmurr/js_3d_engine/";
+        link1.appendChild(githubLink);
+        message.appendChild(link1);
+
+        let link2 = document.createElement("div");
+        link2.classList.add("aboutLink");
+        let joshWebsite = document.createElement("a");
+        let joshWebsitelinkText = document.createTextNode("Made by Josh Murr");
+        joshWebsite.appendChild(joshWebsitelinkText);
+        joshWebsite.title = "joshmurr";
+        joshWebsite.href = "http://www.joshmurr.com/";
+        link2.appendChild(joshWebsite);
+        message.appendChild(link2);
 
         if(_value !== 0) {
             button.classList.add("selected");
@@ -111,6 +133,7 @@ export default class GUI {
             }
             this.value++;
         }
+
 
         this.menuContainer.appendChild(button);
         this.body.appendChild(message);

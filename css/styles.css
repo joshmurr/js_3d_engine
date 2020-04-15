@@ -70,17 +70,21 @@ canvas{
 .about{
     position: absolute;
     width: 400px;
-    height: 14.4em;
     top: 0px;
     left: 160px;
     padding-left: 1em;
+    padding-bottom: 1em;
     line-height: 1.2em;
     background-color: lightgray;
     z-index: 997;
 }
 
-.about p {
+.about p, a {
     font-size: 0.8em;
+}
+
+.aboutLink{
+    line-height: 1.3em;
 }
 
 .show{
@@ -174,10 +178,13 @@ button.selected{
     }
     .about{
         width: 400px;
-        height: 18em;
         left: 200px;
+        padding-bottom: 1.2em;
     }
-    .about p {
+    .about p, a {
         font-size: 1em;
+    }
+    .aboutLink{
+        line-height: 1.6em;
     }
 }

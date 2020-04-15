@@ -72,7 +72,7 @@ let gui = new GUI();
 gui.mobile("Sorry, best on desktop.");
 gui.menu();
 gui.title("Simple Demo");
-gui.about("about", "About", 0, "This is the about bit");
+gui.about("about", "About", 0, ["This is the about bit"]);
 gui.title("Drawing Style", true);
 gui.button("colour", "Colour", 0);
 gui.button("normals", "Face Normals", 0);
