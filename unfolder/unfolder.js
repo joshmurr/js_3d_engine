@@ -45,7 +45,7 @@ gui.mobile("Sorry, best on desktop.");
 
 gui.menu();
 gui.title("Unfolder");
-gui.about("about", "About", 0, ["This is my first attempt at some kind of unfolding algorithm, and for the most part it's working quite well. Generally for convex shapes it copes but I left the Torus in there to show where it struggles. The creation of the Spanning Tree could be improved to create better layouts.","This was made using my JavaScript canvas-based 3D engine and renderer.", "More information in the links below:"]);
+gui.about("about", "About", 0, ["This is my attempt at some kind of unfolding algorithm, and for the most part it's working reasonably well.", "Turn the Spanning Tree on in the GUI to see how the algorithm creates the unfolding pattern based on the angles between faces. This approach seems to work well with concave shapes, but leads to problems with convex - I left the Torus in there to demonstrate where it struggles.", "There is a lot of room for improvement and something I'll be working on over time.","This was made using my JavaScript canvas-based 3D renderer.", "For a write up of the project and more information, see the links below:"]);
 gui.title("Drawing Style", true);
 gui.button("colour", "Colour", 0);
 gui.button("normals", "Face Normals", 0);
