@@ -26,7 +26,7 @@ The bulk of the maths is handled by the Vec4 and Mat44 classes. I started by wri
 
 The matrices are stored in __column major__ format like GLSL. This caused a headache for me at times as different libraries and languages store matrices differently, and the notation can vary too - so it's worth being clear. A matrix is created and stored like so:
 
-```
+```javascript
 M = [ 0  4   8  12     ===  M = [ 0, 1, 2, 3, ... , 15 ]  
       1  5   9  13     
       2  6  10  14
@@ -35,7 +35,7 @@ M = [ 0  4   8  12     ===  M = [ 0, 1, 2, 3, ... , 15 ]
 
 So for instance, the Perspective Projection Matrix is based on the OpenGL one, which appears like so (in most books/online):
 
-```
+```javascript
 projMat = [ 2n/r-l   0     r+l/r-l     0
                0   2n/t-b  t+b/t-b     0
                0     0    -f+n/f-n -2nf/f-n
@@ -44,7 +44,7 @@ projMat = [ 2n/r-l   0     r+l/r-l     0
 
 And the implementation is like so:
 
-```
+```javascript
 projMat.M[0]  = 2n/(r-l);
 projMat.M[1]  = 0;
 projMat.M[2]  = 0;
@@ -59,12 +59,12 @@ projMat.M[10] = -fn/(f-n);
 projMat.M[11] = -1;
 projMat.M[12] = 0;
 projMat.M[13] = 0;
-projMat.M[14] = -2nf/f-n);
+projMat.M[14] = -2nf/(f-n);
 projMat.M[15] = 0;
 
 ```
 
-Rotation is kept quite simple. So far it isn't something I've had to deal with much as I'm just rendering meshes in the centre of the screen. The most useful I found to be `setAxisAngle()` (in Mat44.js) based on [this implementation](https://sites.google.com/site/glennmurray/Home/rotation-matrices-and-formulas/rotation-about-an-arbitrary-axis-in-3-dimensions) of the [Rodrigues' Rotation Formula](https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula).
+Rotation is kept quite simple. So far it isn't something I've had to deal with much as I'm just rendering meshes in the centre of the screen. The most useful I found to be `setAxisAngle()` ([in Mat44.js](https://github.com/joshmurr/js_3d_engine/blob/master/js/math/mat44.js)) based on [this implementation](https://sites.google.com/site/glennmurray/Home/rotation-matrices-and-formulas/rotation-about-an-arbitrary-axis-in-3-dimensions) of the [Rodrigues' Rotation Formula](https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula).
 
 Already the maths needs an overhaul and I have lot of redundant or helper functions which can be stripped out... but it works for now.
 
@@ -92,7 +92,7 @@ The render loop has different style layers (faces, wireframe, points, etc.) whic
 
 The face colours are based on the simple _diffuse_ colour method of finding the dot product of the face normal and a light in the scene (defined at the start), and multiplying this by the meshes' colour, or 255 to get the 'normal' colour. This colour information is stored in a one-dimensional array like so:
 
-```
+```javascript
 this._faceColourArray[sorted_indices[i]*3] = Math.floor(diffuse*mesh.colour.x);
 this._faceColourArray[1+sorted_indices[i]*3] = Math.floor(diffuse*mesh.colour.y);
 this._faceColourArray[2+sorted_indices[i]*3] = Math.floor(diffuse*mesh.colour.z);
@@ -104,7 +104,7 @@ This is to allow the colour information to be accessed by different styles later
 
 The GUI was a little impromptu attempt to dynamically create GUI elements like buttons and sliders and actually turned out to be really useful. A GUI element is defined in the main javascript file like so:
 
-```
+```javascript
 gui.button("shownet", "Show Net", 1);
 gui.title("Translation", true);
 gui.slider("xTrans",-9,10, 0, 0.1);
@@ -119,7 +119,7 @@ Building this whole thing from the ground up, including the vector and matrix cl
 
 The tester I created was as simple as possible - this is essentially it:
 
-```
+```javascript
 assert(message, actual, expected){
     if(actual === expected) {
         this.createLogEntry(message, actual, expected, "PASS");
