@@ -6,6 +6,10 @@ This was created as an Easter project while studying for a MSc in Creative Compu
 
 ---
 
+There is some more specific writing in [Simple Demo](https://github.com/joshmurr/js_3d_engine/tree/master/simple_demo) and [Unfolder](https://github.com/joshmurr/js_3d_engine/tree/master/unfolder), the latter goes into the unfolding algorithm in depth.
+
+---
+
 I made [a tool to generate and animate parametric solids and surfaces](https://js-geom.now.sh/) ([repo here](https://github.com/joshmurr/geometry_js)) but the rendering method was quite basic and it reached it's limits with wireframe models. So in making a slightly more sophisticaed renderer I ended up with this small Javascript framework. I tried my best to create something which is relatively general purpose which I could use for future experiments. The first of which was making a tool to unfold the 3D solids - [I got into more detail about that project here](https://github.com/joshmurr/js_3d_engine/tree/master/unfolder). Here I will go through some of the features of the core renderer and how it works.
 
 ## Vectors and Matrices
