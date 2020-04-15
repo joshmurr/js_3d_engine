@@ -47,10 +47,10 @@ export default class Renderer{
         projMat.M[8]  = 0;
         projMat.M[9]  = 0;
         projMat.M[10] = _far / (_far - _near);
-        projMat.M[11] = _near*_far / (_far - _near);
+        projMat.M[11] = -1;
         projMat.M[12]  = 0;
         projMat.M[13]  = 0;
-        projMat.M[14] = -1;
+        projMat.M[14] = _near*_far / (_far - _near);
         projMat.M[15] = 0;
 
         return projMat;
@@ -88,7 +88,7 @@ export default class Renderer{
         projMat.M[11] = -1;
         projMat.M[12]  = 0;
         projMat.M[13]  = 0;
-        projMat.M[14] = -2*_near*_far / (_far - _near);
+        projMat.M[14] = -(2*_near*_far) / (_far - _near);
         projMat.M[15] = 0;
 
         return projMat;
@@ -192,6 +192,7 @@ export default class Renderer{
 
     setup(){
         this._projectionMat = this.createOpenGLPerspectiveProjectionMatrix(90, this.width/this.height, 0.1, 100);
+        // this._projectionMat = this.createPerspectiveProjectionMatrix(90, this.width/this.height, 0.1, 100);
         // let projectionMat = this.createOpenGLOrthographicProjectionMatrix(90, this.width/this.height, 0.1, 100);
         this._viewMat = this.createViewMatrix(this.scene.camera);
 
@@ -203,11 +204,13 @@ export default class Renderer{
         this._VP = new Mat44();
 
         let maxArraySize = this.scene.biggestMeshSize*3;
+
         // faceColourArray = // [ R G B
         //                        R G B
         //                        R G B
         //                        ...   ]
         this._faceColourArray = new Array(maxArraySize);
+
         // wireframePoints = [ [X, Y], [X, Y], [X, Y],
         //                     [X, Y], [X, Y], [X, Y],
         //                     [X, Y], [X, Y], [X, Y],
@@ -221,7 +224,7 @@ export default class Renderer{
         this._MVP.multiplyMat(this._projectionMat);
         this._MVP.multiplyMat(this._viewMat);
         this._VP.copy(this._MVP); // ViewProjection
-        this._MVP.multiplyMat(mesh.getModelMatrix(this.guiValues));
+        this._MVP.multiplyMat(mesh.getModelMatrix(this.guiValues)); // Multiply by the model matrix
 
         // Background ----------------------------------
         this.ctx.fillStyle = this.scene.backgroundColour;
@@ -246,7 +249,7 @@ export default class Renderer{
             // Get face from sorted list
             let face = mesh.faces[sorted_indices[i]];
             let faceSize = face.length;
-
+            let norm;
             let transformedNormal;
 
 
@@ -255,10 +258,12 @@ export default class Renderer{
                 // let faceButton = document.getElementById("face");
                 // faceButton.value = 1;
                 // faceButton.classList.toggle("selected", true);
-                let norm = mesh.norms[sorted_indices[i]];
+                norm = mesh.norms[sorted_indices[i]];
                 let normalTransformMatrix = this._MVP.getAffineInverse();
                 normalTransformMatrix.transpose();
                 transformedNormal = normalTransformMatrix.getMultiplyVec(norm);
+                // transformedNormal = this._MVP.getMultiplyVec(norm);
+                // transformedNormal.normalize();
                 dir = transformedNormal.dot(new Vec4(0,0,1000)); // Dot with vec way behind mesh
                 let diffuse = Math.max(0, Math.abs(transformedNormal.dot(this.scene.light)));
 
@@ -349,6 +354,8 @@ export default class Renderer{
 
 
             // Calculate centroid position for all the following calculations:
+                // Only multiply by the ViewProjection matrix as the centroid already to the model
+                // matrix manipulation applied.
             let centroid = this._VP.getMultiplyVec(mesh.centroids[sorted_indices[i]]);
             centroid.NDC();
             xRange = (centroid.x + 1)*0.5;
@@ -360,8 +367,6 @@ export default class Renderer{
 
             // Centroid Numbers -------------**--
             if(this.guiValues["faceid"]%2!==0){
-                // Only multiply by the ViewProjection matrix as the centroid already to the model
-                // matrix manipulation applied.
                 this.ctx.fillStyle="rgb("+Math.floor(xRange*128)+127+","+Math.floor(yRange*128)+127+","+Math.floor(zRange*128)+127+")";
                 this.ctx.fillText(sorted_indices[i], xScreen, yScreen);
             }
@@ -371,7 +376,10 @@ export default class Renderer{
             if(this.guiValues["facenormallines"] && this.guiValues["facenormallines"]%2!==0){
                 // Only multiply by the ViewProjection matrix as the centroid already to the model
                 // matrix manipulation applied.
-                let normCoord = transformedNormal.getMultiply(0.1);
+                // norm.normalize();
+                let normCoord = this._MVP.getMultiplyVec(norm);// norm.getMultiply(0.1);
+                normCoord.normalize();
+                normCoord.multiply(0.5);
                 normCoord.add(centroid);
                 let normScreenX = this.width * (normCoord.x+1)*0.5;
                 let normScreenY = this.height * (1-(normCoord.y + 1)*0.5);

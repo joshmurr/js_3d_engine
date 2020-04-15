@@ -16,7 +16,7 @@ let octahedron = new Octahedron();
 let cube = new Cube();
 let irregularOctahedron = new IrregularOctahedron();
 let irregularIcosahedron = new IrregularIcosahedron();
-let sphere = new Sphere(8, 8, 0, Math.PI*2, 0, Math.PI*2);
+let sphere = new Sphere(8, 8, 0, Math.PI, 0, Math.PI*2);
 let torus = new Torus(8,8, 0, Math.PI*2, 0, Math.PI*2, 1.2, 0.4);
 let klein = new KleinBottle(4,4, 0, Math.PI*2, 0, Math.PI*2);
 

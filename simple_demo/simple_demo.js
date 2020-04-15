@@ -8,9 +8,10 @@ import Scene from '../js/scene/scene.js';
 
 import { Icosahedron, Octahedron, Tetrahedron, Cube } from '../js/mesh/platonicSolids.js';
 import { Sphere, Torus, KleinBottle, MobiusTube, SineSurface, EightSurface, HyperbolicOctahedron, CrossCap } from '../js/mesh/parametricSolid.js';
-import { Teapot2 } from '../js/mesh/miscSolid.js';
+import { Icosphere, Teapot2 } from '../js/mesh/miscSolid.js';
 
 let icosahedron = new Icosahedron();
+let icosphere = new Icosphere(1);
 let octahedron = new Octahedron();
 let tetrahedron = new Tetrahedron();
 let cube = new Cube();
@@ -19,7 +20,7 @@ let torus = new Torus(16, 16, 0, Math.PI*2, 0, Math.PI*2, 2, 1);
 let klein = new KleinBottle(16, 32, 0, Math.PI*2, 0, Math.PI*2);
 let mobiusTube = new MobiusTube(16, 16, 0, Math.PI*2, 0, Math.PI*2, 1, 2);
 let sineSurface = new SineSurface(32, 32, 0, Math.PI*2, 0, Math.PI*2, 1);
-let sphere = new Sphere(8, 8, 0, Math.PI*2, 0, Math.PI*2);
+let sphere = new Sphere(8, 8, 0, Math.PI, 0, Math.PI*2);
 let eightSurface = new EightSurface(32, 32, 0, Math.PI*2, -Math.PI/2, Math.PI/2);
 let hyperbolicOctahedron = new HyperbolicOctahedron(32, 32, -Math.PI/2, Math.PI/2, -Math.PI, Math.PI);
 let crossCap = new CrossCap(16, 16, 0, Math.PI*2, 0, Math.PI/2);
@@ -56,6 +57,7 @@ let meshes = {
     "Tetrahedron": tetrahedron,
     "Cube": cube,
     "Sphere": sphere,
+    "Icosphere": icosphere,
     "Torus": torus,
     "Sine Surface": sineSurface,
     "Cross Cap": crossCap,

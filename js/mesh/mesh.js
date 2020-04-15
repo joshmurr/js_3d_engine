@@ -250,10 +250,11 @@ export default class Mesh{
             let p1 = this.verts[this.faces[i][1]];
             let p2 = this.verts[this.faces[i][2]];
 
-            let p0subp1 = p1.getSubtract(p0);
+            let p0subp1 = p0.getSubtract(p1);
             let p2subp0 = p2.getSubtract(p0);
 
-            let norm = p0subp1.cross(p2subp0);
+            // let norm = p0subp1.cross(p2subp0);
+            let norm = p2subp0.cross(p0subp1);
             norm.normalize();
             norms.push(norm);
         }
