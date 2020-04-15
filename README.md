@@ -6,6 +6,10 @@
 
 ---
 
+![Teapot](./img/teapot.png)
+
+---
+
 This was created as an Easter project while studying for a MSc in Creative Computing at the Creative Computing Institute in London. It just so happened to be the _Corona Virus lockdown_ so I had a fair amount of time on my hands.
 
 ---
