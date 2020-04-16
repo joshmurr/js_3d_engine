@@ -1,5 +1,11 @@
 # 3D Geometry Unfolder
 
+---
+
+## [The project is currently online here.](https://serene-agnesi-09afd7.netlify.app/unfolder/unfolder.html)
+
+---
+
 ![Screen](../img/unfolder.png)
 
 The initial reason for creating this 3D engine was to build this unfolding tool. I never thought it was going to be _easy_, and it wasn't. I'll run through the way I went about this problem, the difficulties I encountered along the way and why it still is not performing particularly well. This is however an Easter project and needs to end soon, so consider this a checkpoint.. I would say I acheived my minimum-viable-product :man_shrugging: but there is __a lot__ of room for improvement.
@@ -75,7 +81,7 @@ The transformation is formed by taking an _anchor_, which is the point around wh
 
 > NB: At this point I had to do some slightly hacky checks to see if the face needed to be spun 180 degrees as `atan2` only returns a value between 0 and &pi;, so if the face _did_ need to be spun 180, then the angle would be 0.. So I used floating point __imprecision__ to my advantage here to see if the angles were slightly _off_ PI and if so, I'd take that to mean 180:
 
-```
+```javascript
 if(((angle1 < -1.57 && angle1 > -1.58) && (angle2 > 1.57 && angle2 < 1.58))    ||
    ((angle2 < -1.57 && angle2 > -1.58) && (angle1 > 1.57 && angle1 < 1.58))    ||
    ((angle1 > 3.141 && angle1 < 3.142) && (angle2 > -0.001 && angle2 < 0.001)) ||
