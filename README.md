@@ -26,7 +26,7 @@ The bulk of the maths is handled by the Vec4 and Mat44 classes. I started by wri
 
 The matrices are stored in __column major__ format like GLSL. This caused a headache for me at times as different libraries and languages store matrices differently, and the notation can vary too - so it's worth being clear. A matrix is created and stored like so:
 
-```javascript
+```
 M = [ 0  4   8  12     ===  M = [ 0, 1, 2, 3, ... , 15 ]  
       1  5   9  13     
       2  6  10  14
@@ -35,7 +35,7 @@ M = [ 0  4   8  12     ===  M = [ 0, 1, 2, 3, ... , 15 ]
 
 So for instance, the Perspective Projection Matrix is based on the OpenGL one, which appears like so (in most books/online):
 
-```javascript
+```
 projMat = [ 2n/r-l   0     r+l/r-l     0
                0   2n/t-b  t+b/t-b     0
                0     0    -f+n/f-n -2nf/f-n
@@ -44,7 +44,7 @@ projMat = [ 2n/r-l   0     r+l/r-l     0
 
 And the implementation is like so:
 
-```javascript
+```
 projMat.M[0]  = 2n/(r-l);
 projMat.M[1]  = 0;
 projMat.M[2]  = 0;
