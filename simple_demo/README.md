@@ -38,3 +38,11 @@ addToVertIndex(v){
 This means I can create vertices and faces simultaneously which is much easier to keep track of which vert belongs to which face. And duplicates do not matter as `getId()` returns the correct ID of a vertex if it already exists.
 
 This process can then be iterated if a more refined Icosphere is needed. But 3 iterations seems to be limit before it crashes...
+
+## TODO:
+
+- Clipping/Culling.
+- Mouse picking to highlight faces or edges.
+- Mouse manipulation (rotation, zooming).
+- Animation (rotation, orbit, multiple meshes perhaps).
+- Figure out why it warps so much when the mesh is moved near the edge of the screen.

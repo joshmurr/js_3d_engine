@@ -74,6 +74,7 @@ canvas{
     left: 160px;
     padding-left: 1em;
     padding-bottom: 1em;
+    padding-right: 1em;
     line-height: 1.2em;
     background-color: lightgray;
     z-index: 997;
@@ -128,10 +129,12 @@ button.selected{
 .slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 25px;
-    height: 25px;
-    background: #4CAF50;
+    width: 1.4em;
+    height: 1.4em;
+    background: #000;
     cursor: pointer;
+    border: none;
+    border-radius: 2px;
 }
 
 .slider::-moz-range-thumb {

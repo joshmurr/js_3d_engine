@@ -95,3 +95,14 @@ So to solve this, if a branch could not be joined with the already joined net, i
 You can see the lower icosphere net is not perfect as it has some overlapping faces. But I saw this as something of a success...
 
 Finally the colours can be taken from the model itself and colour the faces as per the model.
+
+## TODO:
+
+I did not manage to get this project to the point I had hoped, largely because I decided to build the rendering aspect from scratch also, so spent a lot of time implementing 4x4 Matrix classes and learning about projection matrices etc. However I think it did serve me well when it came to implementing the unfolding algorithm as I had a pretty thorough understanding of the whole system! However, still on the list is:
+
+- Refine the Spanning Tree to better accomodate concave shapes, or shapes with holes.
+- Add tabs to the net.
+- Export the net as an SVG for printing or laser cutting.
+- Label the net with inside/outside folds. 
+- Edge-to-edge labelling (A -> A).
+- User defined cuts.
